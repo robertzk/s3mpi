@@ -6,7 +6,7 @@ Authors@R: c(person("Robert", "Krzyzanowski", email = "technoguyrob@gmail.com", 
 Depends:
   R (>= 3.0.0)
 Imports:
-  AWS.tools
+  AWS.tools,
   stringr
 License: GPL (>= 2)
 LazyData: true
