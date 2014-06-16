@@ -4,9 +4,9 @@ Description: Easily pass objects like lists or dataframes between consoles
 Version: 0.1
 Authors@R: c(person("Robert", "Krzyzanowski", email = "technoguyrob@gmail.com", role = c("aut", "cre")))
 Depends:
-  R (>= 3.0.0)
+  R (>= 3.0.0),
+  AWS.tools
 Imports:
-  AWS.tools,
   stringr
 License: GPL (>= 2)
 LazyData: true
