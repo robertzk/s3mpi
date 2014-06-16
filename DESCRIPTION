@@ -2,17 +2,13 @@ Package: s3mpi
 Title: R message passing interface using S3 storage
 Description: Easily pass objects like lists or dataframes between consoles
 Version: 0.1
-Authors@R: c(person("Robert", "Krzyzanowski", email = "technoguyrob@gmail.com", role = c("aut", "cre")))
+Authors@R: c(person("Robert", "Krzyzanowski", email = "technoguyrob@gmail.com",
+    role = c("aut", "cre")))
 Depends:
-  R (>= 3.0.0),
-  AWS.tools
+    R (>= 3.0.0)
 Imports:
-  stringr
+    AWS.tools,
+    stringr
 License: GPL (>= 2)
 LazyData: true
-Collate:
-  's3mpi-package.r'
-  's3store.r'
-  's3read.r'
-  's3path.r'
-  'grab_latest_file_in_s3_dir.r'
+Roxygen: list(wrap = FALSE)

@@ -1,7 +1,7 @@
 # Overwrite AWS.tools::s3.put because we would like to check md5.
-function (x, bucket, bucket.location = "US", verbose = FALSE,
+s3.put <- function (x, bucket, bucket.location = "US", verbose = FALSE,
     debug = FALSE, encrypt = FALSE) {
-    check.bucket(bucket)
+    AWS.tools:::check.bucket(bucket)
     x.serialized <- tempfile()
     saveRDS(x, x.serialized)
     s3.cmd <- paste("s3cmd put", x.serialized, bucket, ifelse(encrypt,
