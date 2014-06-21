@@ -1,4 +1,5 @@
 grab_latest_file_in_s3_dir <- function(.path = s3path()) {
+  require(stringr)
   paths <- system(paste('s3cmd ls ', .path, '*', sep = ''), intern = TRUE)
   times <- as.POSIXct(substring(paths, 1, 16))
   latest <- which(max(times) == times)
