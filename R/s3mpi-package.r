@@ -2,5 +2,5 @@
 #'
 #' @name s3mpi
 #' @docType package
-#' @import AWS.tools
+#' @import AWS.tools stringr
 NULL

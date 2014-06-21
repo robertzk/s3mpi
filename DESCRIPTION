@@ -11,6 +11,8 @@ Depends:
 Imports:
     AWS.tools,
     stringr
+Suggests:
+    testthat
 License: GPL (>= 2)
 LazyData: true
 Roxygen: list(wrap = FALSE)
