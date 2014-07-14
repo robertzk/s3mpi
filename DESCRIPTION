@@ -10,7 +10,8 @@ Depends:
     R (>= 3.0.0)
 Imports:
     AWS.tools,
-    stringr
+    stringr,
+    digest
 Suggests:
     testthat
 License: GPL (>= 2)

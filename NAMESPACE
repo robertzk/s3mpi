@@ -3,4 +3,5 @@
 export(s3read)
 export(s3store)
 import(AWS.tools)
+import(digest)
 import(stringr)

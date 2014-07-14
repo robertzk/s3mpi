@@ -2,5 +2,5 @@
 #'
 #' @name s3mpi
 #' @docType package
-#' @import AWS.tools stringr
+#' @import AWS.tools stringr digest
 NULL
