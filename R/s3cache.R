@@ -72,7 +72,7 @@ save_to_cache <- function(key, value, cache_dir = cache_directory()) {
 last_modified <- function(key) {
   s3result <- system(paste0('s3cmd ls ', key), intern = TRUE)[1]
   if (is.character(s3result) && !is.na(s3result) && nzchar(s3result))
-    strptime(substring(s3result, 1, 16), '%Y-%M-%d %H:%M')
+    strptime(substring(s3result, 1, 16), '%Y-%m-%d %H:%M')
 }
 
 not_cached <- local({ tmp <- list(); class(tmp) <- 'not_cached'; tmp })
