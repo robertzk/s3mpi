@@ -70,8 +70,8 @@ save_to_cache <- function(key, value, cache_dir = cache_directory()) {
 #' @param key character. The s3 key of the object.
 #' @return the last modified time or \code{NULL} if it does not exist on S3.
 last_modified <- function(key) {
-  s3result <- system(paste0('s3cmd ls ', key), intern = TRUE) 
-  if (is.character(s3result) && nzchar(s3result))
+  s3result <- system(paste0('s3cmd ls ', key), intern = TRUE)[1]
+  if (is.character(s3result) && !is.na(s3result) && nzchar(s3result))
     strptime(substring(s3result, 1, 16), '%Y-%M-%d %H:%M')
 }
 
