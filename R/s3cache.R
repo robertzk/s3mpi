@@ -43,7 +43,7 @@ fetch_from_cache  <- function(key, cache_dir = cache_directory()) {
 
   info <- readRDS(cache_file('info'))
   # Check if cache is invalid.
-  if (info$mtime != last_modified(key)) return(not_cached)
+  if (!identical(info$mtime, last_modified(key))) return(not_cached)
 
   readRDS(cache_file('data'))
 }
