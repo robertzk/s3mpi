@@ -4,7 +4,7 @@ s3.get <- function (bucket, bucket.location = "US", verbose = FALSE, debug = FAL
   s3.cmd <- paste("s3cmd get", bucket, x.serialized, paste("--bucket-location",
       bucket.location), ifelse(verbose, "--verbose --progress",
       "--no-progress"), ifelse(debug, "--debug", ""))
-  res <- system(s3.cmd, intern = TRUE)
+  system(s3.cmd)
   ans <- readRDS(x.serialized)
   unlink(x.serialized)
   ans
