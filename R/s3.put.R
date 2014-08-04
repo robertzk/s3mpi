@@ -6,7 +6,7 @@ s3.put <- function (x, bucket, bucket.location = "US", verbose = FALSE,
     saveRDS(x, x.serialized)
     s3.cmd <- paste("s3cmd put", x.serialized, bucket, ifelse(encrypt,
         "--encrypt", ""), paste("--bucket-location", bucket.location),
-        "--no-progress", ifelse(verbose, "--verbose", ""), ifelse(debug,
+        ifelse(verbose, "--verbose --progress", "--no-progress"), ifelse(debug,
             "--debug", ""), '--check-md5')
     res <- system(s3.cmd, intern = TRUE)
     unlink(x.serialized)
