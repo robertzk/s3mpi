@@ -12,7 +12,7 @@
 #'    a cache read will be performed instead.
 s3cache <- function(s3key, value) {
   if (!cache_enabled())
-    stop("Cannot use s3mpi::s3cache until you set options(s3mpi.path) ",
+    stop("Cannot use s3mpi::s3cache until you set options(s3mpi.cache) ",
          "to a directory in which to place cache contents.")
 
   dir.create(d <- cache_directory(), FALSE, TRUE)
