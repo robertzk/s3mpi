@@ -1,4 +1,4 @@
-function (bucket, bucket.location = "US", verbose = FALSE, debug = FALSE) {
+s3.get <- function (bucket, bucket.location = "US", verbose = FALSE, debug = FALSE) {
   check.bucket(bucket)
   x.serialized <- tempfile()
   s3.cmd <- paste("s3cmd get", bucket, x.serialized, paste("--bucket-location",
