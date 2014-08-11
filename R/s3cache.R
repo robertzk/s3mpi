@@ -43,7 +43,12 @@ fetch_from_cache  <- function(key, cache_dir = cache_directory()) {
 
   info <- readRDS(cache_file('info'))
   # Check if cache is invalid.
-  if (!identical(info$mtime, last_modified(key))) return(not_cached)
+  if (!has_internet())
+    warning("Your network connection seems to be unavailable. s3mpi will ",
+            "use the latest cache entries instead of pulling from S3.",
+            call. = FALSE, immediate. = FALSE)
+  else if (!identical(info$mtime, last_modified(key)))
+    return(not_cached)
 
   readRDS(cache_file('data'))
 }
