@@ -14,7 +14,7 @@ s3store <- function(obj, name = NULL, .path = s3path(), ...) {
   if (is.null(name)) name <- deparse(substitute(obj))
   s3key <- paste(.path, name, sep = '')
   s3mpi:::s3.put(obj, s3key, ...)
-  s3cache(s3key, obj)
+  if (!is.null(getOption('s3mpi.cache'))) s3cache(s3key, obj)
   invisible(s3key)
 }
   
