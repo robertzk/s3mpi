@@ -12,5 +12,5 @@ has_internet <- function() {
 
 deserialize <- function(object) {
   if (is(object, 'special_serialized_object')) object$deserialize(object$object)
-	else object
+  else object
 }
