@@ -1,3 +1,4 @@
+library(testthatsomemore)
 context('special serialized object')
 
 test_that('it can read special serialized object', {
