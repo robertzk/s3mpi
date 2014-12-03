@@ -16,8 +16,7 @@ s3read <- function(name = NULL, .path = s3path(), ...) {
   if (is.null(getOption('s3mpi.cache'))) deserialize(s3.get(s3key, ...))
   else if (is.not_cached(tmp <- s3cache(s3key))) {
     value <- s3.get(s3key, ...)
-	  s3cache(s3key, value)
+    s3cache(s3key, value)
     deserialize(value)
-  } else
-		deserialize(tmp)
+  } else deserialize(tmp)
 }
