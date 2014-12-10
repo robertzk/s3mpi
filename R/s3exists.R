@@ -7,8 +7,9 @@
 #' @param path string. Path to file
 
 #' @export
-s3exists <- function(name, .path = s3path(), ...) { 
-  s3key <- paste(.path, name, sep = '')
+s3exists <- function(name, .path, ...) {
+  s3key <- if (missing(.path)) name else paste(.path, name, sep = '')
+  if (!grepl('^s3://', s3key)) stop("s3 paths must begin with \"s3://\"")
   s3cmd <- paste('s3cmd ls', s3key)
   results <- system(s3cmd, intern=TRUE)
   length(results) > 0
