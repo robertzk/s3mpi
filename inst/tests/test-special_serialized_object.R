@@ -2,8 +2,6 @@ library(testthatsomemore)
 context('special serialized object')
 
 test_that('it can read special serialized object', {
-	options(s3mpi.path = 's3://avantminer/tmp/')
-
   stub(s3read, "s3.get") <- function(...) structure(class =	'special_serialized_object',
 	                                                  list(deserialize = function(.) . + 1,
 													                               object = 1))
