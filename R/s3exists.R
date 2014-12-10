@@ -9,8 +9,11 @@
 #' @export
 s3exists <- function(name, .path, ...) {
   s3key <- if (missing(.path)) name else paste(.path, name, sep = '')
+  s3key <- gsub('/$', '', s3key) # strip terminal /
   if (!grepl('^s3://', s3key)) stop("s3 paths must begin with \"s3://\"")
   s3cmd <- paste('s3cmd ls', s3key)
   results <- system(s3cmd, intern=TRUE)
-  sum(grepl(pp('#{s3key}$'), results) > 0)
+  sum(grepl(pp('#{s3key}(/[0-9A-Za-z]+)*/?$'), results)) > 0
 }
+
+
