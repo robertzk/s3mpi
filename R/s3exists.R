@@ -13,7 +13,7 @@ s3exists <- function(name, .path, ...) {
   if (!grepl('^s3://', s3key)) stop("s3 paths must begin with \"s3://\"")
   s3cmd <- paste('s3cmd ls', s3key)
   results <- system(s3cmd, intern=TRUE)
-  sum(grepl(pp('#{s3key}(/[0-9A-Za-z]+)*/?$'), results)) > 0
+  sum(grepl(paste(s3key, '(/[0-9A-Za-z]+)*/?$', sep=''), results)) > 0
 }
 
 
