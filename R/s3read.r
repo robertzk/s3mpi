@@ -19,5 +19,5 @@ s3read <- function(name = NULL, .path = s3path(), ...) {
     s3cache(s3key, value)
   }
   value <- s3normalize(value, TRUE)
-  value$read(value)
+  attr(value, "read")(value)
 }

@@ -25,7 +25,7 @@ s3store <- function(obj, name = NULL, .path = s3path(), ...) {
     obj4save <- obj4save$obj
   }
   obj4save <- s3normalize(obj4save, FALSE)
-  s3mpi:::s3.put(obj4save$write(obj4save), s3key, ...)
+  s3mpi:::s3.put(attr(obj4save, "write")(obj4save), s3key, ...)
   if (!is.null(getOption('s3mpi.cache'))) s3cache(s3key, obj4save)
   invisible(s3key)
 }
