@@ -4,3 +4,4 @@ s3normalize <- function(object, read = TRUE) {
   else
     attr(object, "write") <- attr(object, "s3mpi.serialize")$write %||% identity
   object
+}
