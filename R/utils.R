@@ -9,8 +9,3 @@ has_internet <- function() {
       grepl('unable to resolve', internet_check$message))
   })
 }
-
-deserialize <- function(object) {
-  if (is(object, 'special_serialized_object')) object$deserialize(object$object)
-  else object
-}
