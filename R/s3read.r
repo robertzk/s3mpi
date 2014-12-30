@@ -18,6 +18,5 @@ s3read <- function(name = NULL, .path = s3path(), ...) {
     value <- s3.get(s3key, ...)
     s3cache(s3key, value)
   }
-  value <- s3normalize(value, TRUE)
-  attr(value, "read")(value)
+  s3normalize(value, TRUE)
 }
