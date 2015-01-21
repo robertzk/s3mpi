@@ -43,12 +43,14 @@ fetch_from_cache  <- function(key, cache_dir = cache_directory()) {
 
   info <- readRDS(cache_file('info'))
   # Check if cache is invalid.
-  if (is.null(getOption('s3mpi.skip_connection_check')) && !has_internet()) {
+  connected <- has_internet()
+  if (!connected) {
     warning("Your network connection seems to be unavailable. s3mpi will ",
             "use the latest cache entries instead of pulling from S3.",
             call. = FALSE, immediate. = FALSE)
   }
-  else if (!identical(info$mtime, last_modified(key))) {
+
+  if (connected && !identical(info$mtime, last_modified(key))) {
     not_cached
   } else {
     readRDS(cache_file('data'))
@@ -77,9 +79,11 @@ save_to_cache <- function(key, value, cache_dir = cache_directory()) {
 #' @param key character. The s3 key of the object.
 #' @return the last modified time or \code{NULL} if it does not exist on S3.
 last_modified <- function(key) {
+  if (!has_internet()) { return(as.POSIXct(as.Date("2000-01-01"))) }
   s3result <- system(paste0('s3cmd ls ', key), intern = TRUE)[1]
-  if (is.character(s3result) && !is.na(s3result) && nzchar(s3result))
+  if (is.character(s3result) && !is.na(s3result) && nzchar(s3result)) {
     strptime(substring(s3result, 1, 16), '%Y-%m-%d %H:%M')
+  }
 }
 
 not_cached <- local({ tmp <- list(); class(tmp) <- 'not_cached'; tmp })
