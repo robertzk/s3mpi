@@ -43,14 +43,16 @@ fetch_from_cache  <- function(key, cache_dir = cache_directory()) {
 
   info <- readRDS(cache_file('info'))
   # Check if cache is invalid.
-  if (!has_internet())
+  if (is.null(getOption('s3mpi.skip_connection_check')) && !has_internet()) {
     warning("Your network connection seems to be unavailable. s3mpi will ",
             "use the latest cache entries instead of pulling from S3.",
             call. = FALSE, immediate. = FALSE)
-  else if (!identical(info$mtime, last_modified(key)))
-    return(not_cached)
-
-  readRDS(cache_file('data'))
+  }
+  else if (!identical(info$mtime, last_modified(key))) {
+    not_cached
+  } else {
+    readRDS(cache_file('data'))
+  }
 }
 
 #' Helper function for saving a file to a cache directory.
