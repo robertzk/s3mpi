@@ -11,7 +11,7 @@ has_internet <- local({
     has_internet_flag <<- suppressWarnings({
       internet_check <- try(file('http://google.com', 'r'))
       if (!is(internet_check, 'try-error') && is(internet_check, 'connection')) {
-        on.exit(close.connection(file))
+        on.exit(close.connection(internet_check))
       }
       !(is(internet_check, 'try-error') &&
         grepl('cannot open', internet_check$message))
