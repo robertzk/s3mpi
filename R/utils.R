@@ -10,7 +10,7 @@ has_internet <- local({
     if (!is.null(has_internet_flag)) { return(has_internet_flag) }
     has_internet_flag <<- suppressWarnings({
       internet_check <- try(file('http://google.com', 'r'))
-      if (!is(internet_check, 'try-error')) {
+      if (!is(internet_check, 'try-error') && is(internet_check, 'connection')) {
         on.exit(close.connection(file))
       }
       !(is(internet_check, 'try-error') &&
