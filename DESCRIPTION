@@ -11,7 +11,8 @@ Depends:
 Imports:
     AWS.tools,
     stringr,
-    digest
+    digest,
+    memoise
 Suggests:
     testthat,
     testthatsomemore
