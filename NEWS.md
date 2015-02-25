@@ -1,6 +1,4 @@
-# Version 0.2
+# Version 0.2.2
 
- * Added a caching mechanism that will keep copies of files downloaded and
-   uploaded to S3. Useful if local storage constraints are not an issue.
-   To enable, set `options(s3mpi.cache = '~/.s3cache')` in your `~/.Rprofile`
-   (or replace `'~/.s3cache'` with a directory of your choice).
+ * Added a safety check for s3store. Now if you want to overwrite a key inside a bucket,
+   you need to use s3store(key, safe = FALSE). By default safe is set to TRUE.
