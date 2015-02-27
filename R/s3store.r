@@ -15,7 +15,7 @@ s3store <- function(obj, name = NULL, .path = s3path(), safe = TRUE, ...) {
   s3key <- paste(.path, name, sep = '')
   if (safe && s3mpi::s3exists(name, .path = .path, ...)) {
     # using cat prints to stdout as opposed to messages, so it can be seen from syberia::run_model()
-    cat(paste("An object with name", name, "on path", path, "already exists. Use `safe = FALSE` to overwrite\n"))
+    cat(paste("An object with name", name, "on path", .path, "already exists. Use `safe = FALSE` to overwrite\n"))
     stop("-------------------------^")
   }
   obj4save <- s3normalize(obj, FALSE)
