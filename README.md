@@ -15,4 +15,3 @@ to determine whether the value is invalidated (i.e., if someone updated the obje
 If you wish to skip this check and read directly from the cache when you do not
 have an internet connection, set `options(s3mpi.skip_connection_check = TRUE)`.
 
-[![Build Status](https://travis-ci.org/robertzk/s3mpi.svg?branch=master)](https://travis-ci.org/robertzk/s3mpi.svg?branch=master)
