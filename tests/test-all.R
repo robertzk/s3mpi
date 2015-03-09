@@ -1,4 +1,4 @@
 library(testthat)
 library(testthatsomemore)
-library(digest)
-test_package("s3mpi")
+library(s3mpi)
+test_check("s3mpi")
