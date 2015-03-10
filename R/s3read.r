@@ -17,7 +17,7 @@
 s3read <- function(name = NULL, .path = s3path(), cache = TRUE, ...) { 
   if (is.null(name)) name <- grab_latest_file_in_s3_dir(.path)
   s3key <- paste(.path, name, sep = '')
-  if (!isTRUE(cache) || !isTRUE(getOption('s3mpi.cache'))) {
+  if (!isTRUE(cache) || !is.null(getOption('s3mpi.cache'))) {
     value <- s3.get(s3key, ...)
   } else if (is.not_cached(value <- s3cache(s3key))) {
     value <- s3.get(s3key, ...)
