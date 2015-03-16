@@ -28,6 +28,7 @@ s3store <- function(obj, name = NULL, .path = s3path(), safe = FALSE, ...) {
   obj4save <- s3normalize(obj, FALSE)
   s3mpi:::s3.put(obj4save, s3key, ...)
   if (!is.null(getOption('s3mpi.cache'))) s3cache(s3key, obj4save)
+  if (is.environment(obj)) s3normalize(obj) # Revert side effects
   invisible(s3key)
 }
 
