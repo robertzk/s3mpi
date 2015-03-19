@@ -1,3 +1,12 @@
+# Version 0.2.5
+
+ * The `s3mpi.memoize_cache` global controls whether or not caching is 
+   [memoised](https://github.com/hadley/memoise). If set to `TRUE`, it would
+   have the effect of keeping a common object in the R session instead of
+   retrieving it from the cached file for each given s3 key. This can significantly
+   speed up code that reads from the same S3 key multiple times within a 
+   single R session.
+
 # Version 0.2.4
 
  * The safety check on `s3store` uses `safe = FALSE` by default now. The new
