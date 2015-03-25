@@ -13,7 +13,7 @@ s3exists <- function(name, .path = s3path(), ...) {
   if (!grepl('^s3://', s3key)) stop("s3 paths must begin with \"s3://\"")
   s3cmd <- paste('aws s3 ls ', s3key)
   results <- suppressWarnings(system(s3cmd, intern=TRUE))
-  filename <- as.data.frame(stringr::str_locate_all(pattern ='/', s3key))
+  filename <- as.data.frame(stringr::str_locate_all(pattern = '/', s3key))
   filename <- filename[NROW(filename), 1]
   filename <- str_sub(s3key, filename + 1, -1)
   sum(grepl(paste(filename, '(/[0-9A-Za-z]+)*/?$', sep=''), results)) > 0
