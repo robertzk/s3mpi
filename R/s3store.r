@@ -15,7 +15,7 @@
 #' s3store(c(1,2,3), 'test123')
 #' print(s3read('test123'))
 #' # [1] 1 2 3
-#' }#' 
+#' }#'
 s3store <- function(obj, name = NULL, .path = s3path(), safe = FALSE, ...) {
   if (is.null(name)) name <- deparse(substitute(obj))
   s3key <- paste(.path, name, sep = '')
@@ -26,7 +26,7 @@ s3store <- function(obj, name = NULL, .path = s3path(), safe = FALSE, ...) {
     stop("-------------------------^")
   }
   obj4save <- s3normalize(obj, FALSE)
-  s3mpi:::s3.put(obj4save, s3key, ...)
+  s3.put(obj4save, s3key)
   if (!is.null(getOption('s3mpi.cache'))) s3cache(s3key, obj4save)
   if (is.environment(obj4save)) s3normalize(obj4save) # Revert side effects
   invisible(s3key)

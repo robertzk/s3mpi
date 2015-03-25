@@ -1,9 +1,7 @@
-s3.get <- function (bucket, bucket.location = "US", verbose = FALSE, debug = FALSE) {
+s3.get <- function (bucket) {
   AWS.tools:::check.bucket(bucket)
   x.serialized <- tempfile()
-  s3.cmd <- paste("s3cmd get", bucket, x.serialized, paste("--bucket-location",
-      bucket.location), ifelse(verbose, "--verbose --progress",
-      "--no-progress"), ifelse(debug, "--debug", ""))
+  s3.cmd <- paste0("aws s3 cp ", bucket, " ", x.serialized)
   system(s3.cmd)
   ans <- readRDS(x.serialized)
   unlink(x.serialized)
