@@ -10,10 +10,6 @@
    speed up code that reads from the same S3 key multiple times within a 
    single R session.
 
-# Version 0.2.5
-
- * ???
-
 # Version 0.2.4
 
  * The safety check on `s3store` uses `safe = FALSE` by default now. The new
