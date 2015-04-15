@@ -2,9 +2,6 @@
  * `s3exists(NULL)` now returns FALSE.  Fixes issue #22.
 
 # Version 0.2.6
- * ???
-
-# Version 0.2.5
 
  * The `s3mpi.memoize_cache` global controls whether or not caching is 
    [memoised](https://github.com/hadley/memoise). If set to `TRUE`, it would
@@ -12,6 +9,10 @@
    retrieving it from the cached file for each given s3 key. This can significantly
    speed up code that reads from the same S3 key multiple times within a 
    single R session.
+
+# Version 0.2.5
+
+ * ???
 
 # Version 0.2.4
 
