@@ -1,4 +1,7 @@
-# Version 0.2.5
+# Version 0.2.7
+ * `s3exists(NULL)` now returns FALSE.  Fixes issue #22.
+
+# Version 0.2.6
 
  * The `s3mpi.memoize_cache` global controls whether or not caching is 
    [memoised](https://github.com/hadley/memoise). If set to `TRUE`, it would
