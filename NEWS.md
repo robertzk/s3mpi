@@ -1,3 +1,8 @@
+# Version 0.2.7
+
+ * Remove the `s3mpi.memoize_cache` global option, since it makes no sense.
+   A user could have overwritten an S3 key in a different R session.
+
 # Version 0.2.5
 
  * The `s3mpi.memoize_cache` global controls whether or not caching is 

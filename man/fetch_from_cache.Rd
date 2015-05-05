@@ -4,7 +4,7 @@
 \alias{fetch_from_cache}
 \title{Helper function for fetching a file from a cache directory.}
 \usage{
-fetch_from_cache(key, cache_dir = cache_directory())
+fetch_from_cache(key, cache_dir)
 }
 \arguments{
 \item{key}{character. The key under which the cache entry is stored.}

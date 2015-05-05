@@ -1,7 +1,7 @@
 Package: s3mpi
 Title: R message passing interface using S3 storage
 Description: Easily pass objects like lists or dataframes between consoles
-Version: 0.2.6
+Version: 0.2.7
 Author: Robert Krzyzanowski <technoguyrob@gmail.com>
 Maintainer: Robert Krzyzanowski <technoguyrob@gmail.com>
 Authors@R: c(person("Robert", "Krzyzanowski", email = "technoguyrob@gmail.com",
@@ -11,8 +11,7 @@ Depends:
 Imports:
     AWS.tools,
     stringr,
-    digest,
-    memoise
+    digest
 Suggests:
     testthat,
     testthatsomemore
