@@ -34,39 +34,27 @@ s3cache <- function(s3key, value) {
 #'    \code{cache_directory()}.
 #' @return the cached object if the cache has not invalidated. Otherwise,
 #'   return \code{s3mpi::not_cached}.
-fetch_from_cache <- local({
-  base_function <- function(key, cache_dir) {
-    cache_key <- digest::digest(key)
-    cache_file <- function(dir) file.path(cache_dir, dir, cache_key)
+fetch_from_cache <- function(key, cache_dir) {
+  cache_key <- digest::digest(key)
+  cache_file <- function(dir) file.path(cache_dir, dir, cache_key)
 
-    if (!file.exists(cache_file('data'))) return(not_cached)
+  if (!file.exists(cache_file('data'))) return(not_cached)
 
-    info <- readRDS(cache_file('info'))
-    # Check if cache is invalid.
-    connected <- has_internet()
-    if (!connected) {
-      warning("Your network connection seems to be unavailable. s3mpi will ",
-              "use the latest cache entries instead of pulling from S3.",
-              call. = FALSE, immediate. = FALSE)
-    }
-
-    if (connected && !identical(info$mtime, last_modified(key))) {
-      not_cached
-    } else {
-      readRDS(cache_file('data'))
-    }
+  info <- readRDS(cache_file('info'))
+  # Check if cache is invalid.
+  connected <- has_internet()
+  if (!connected) {
+    warning("Your network connection seems to be unavailable. s3mpi will ",
+            "use the latest cache entries instead of pulling from S3.",
+            call. = FALSE, immediate. = FALSE)
   }
 
-  memoized_function <- memoise::memoise(base_function)
-
-  function(key, cache_dir = cache_directory()) {
-    if (isTRUE(getOption('s3mpi.memoize_cache'))) {
-      memoized_function(key, cache_dir)
-    } else {
-      base_function(key, cache_dir)
-    }
+  if (connected && !identical(info$mtime, last_modified(key))) {
+    not_cached
+  } else {
+    readRDS(cache_file('data'))
   }
-})
+}
 
 #' Helper function for saving a file to a cache directory.
 #'
