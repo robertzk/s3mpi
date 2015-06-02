@@ -1,3 +1,8 @@
+# Version 0.2.8
+
+ * A hotfix for cache corruption, where data exists without metadata.
+   It can happen if writing metadata ever fails.
+
 # Version 0.2.7
 
  * Remove the `s3mpi.memoize_cache` global option, since it makes no sense.
