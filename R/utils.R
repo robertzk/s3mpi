@@ -6,7 +6,7 @@ cache_enabled <- function() {
 
 cache_directory <- function() {
   dir <- getOption('s3mpi.cache')
-  if (!(is.character(dir) && length(dir) == 1 && !is.na(dir))) {
+  if (!is.null(dir) && !(is.character(dir) && length(dir) == 1 && !is.na(dir))) {
     stop("Please set the ", sQuote("s3mpi.cache"), " to a character ",
          "vector of length 1 giving a directory path.")
   }
