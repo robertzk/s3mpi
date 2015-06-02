@@ -40,6 +40,13 @@ fetch_from_cache <- function(key, cache_dir) {
 
   if (!file.exists(cache_file('data'))) return(not_cached)
 
+  if (!file.exists(cache_file('info'))) {
+    # Somehow the cache became corrupt: data exists without accompanying
+    # meta-data. In this case, simply wipe the cache.
+    file.remove(cache_file('data'))
+    return(not_cached)
+  }
+
   info <- readRDS(cache_file('info'))
   # Check if cache is invalid.
   connected <- has_internet()
