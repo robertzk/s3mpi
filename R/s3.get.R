@@ -4,13 +4,14 @@ s3.get <- function (bucket, bucket.location = "US", verbose = FALSE, debug = FAL
   # Helper function for fetching data from s3
   fetch <- function(){
     x.serialized <- tempfile()
+    unlink(x.serialized)
     s3.cmd <- paste("s3cmd get", bucket, x.serialized, paste("--bucket-location",
     bucket.location), ifelse(verbose, "--verbose --progress",
     "--no-progress"), ifelse(debug, "--debug", ""))
     system(s3.cmd)
 
     ans <- readRDS(x.serialized)
-    unlink(x.serialized)
+    on.exit(unlink(x.serialized), add = TRUE)
     ans
   }
 
