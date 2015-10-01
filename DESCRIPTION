@@ -10,8 +10,9 @@ Depends:
     R (>= 3.0.0)
 Imports:
     AWS.tools,
-    stringr,
-    digest
+    cacher,
+    digest,
+    stringr
 Suggests:
     testthat,
     testthatsomemore

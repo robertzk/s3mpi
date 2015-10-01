@@ -9,6 +9,7 @@ install:
 - "./travis-tool.sh install_r stringr"
 - "./travis-tool.sh install_r testthat"
 - "./travis-tool.sh install_github jimhester/covr"
+- "./travis-tool.sh install_github kirillseva/cacher"
 script: "./travis-tool.sh run_tests"
 after_failure:
 - "./travis-tool.sh dump_logs"
