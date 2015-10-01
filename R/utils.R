@@ -1,5 +1,7 @@
 `%||%` <- function(x, y) if (is.null(x)) y else x
 
+s3cache <- cacher::LRUcache(getOption(s3mpi.cache_size) %||% 10)
+
 cache_enabled <- function() {
   !is.null(tmp <- cache_directory()) && nzchar(tmp)
 }
