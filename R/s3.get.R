@@ -6,7 +6,7 @@ s3.get <- function (bucket, bucket.location = "US", verbose = FALSE, debug = FAL
     x.serialized <- tempfile()
     on.exit(unlink(x.serialized), add = TRUE)
 
-    unlink(x.serialized)
+    if (file.exists(x.serialized)) unlink(x.serialized, force = TRUE)
     s3.cmd <- paste("s3cmd get", bucket, x.serialized, paste("--bucket-location",
     bucket.location), ifelse(verbose, "--verbose --progress",
     "--no-progress"), ifelse(debug, "--debug", ""))
