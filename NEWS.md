@@ -1,3 +1,7 @@
+# Version 0.2.9
+
+* Remove the need to type a trailing slash in `.path`.
+
 # Version 0.2.8
 
  * A hotfix for cache corruption, where data exists without metadata.
