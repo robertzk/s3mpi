@@ -1,4 +1,4 @@
-# Version 0.2.9
+# Version 0.2.9-10
 
 * Remove the need to type a trailing slash in `.path`.
 
