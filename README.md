@@ -60,3 +60,12 @@ have an internet connection, set `options(s3mpi.skip_connection_check = TRUE)`.
 #### Ruby and Python Versions
 
 You can also use S3MPI in [Ruby](https://github.com/robertzk/s3mpi-ruby) and in [Python](https://github.com/robertzk/s3mpy).
+
+#### Command Line Accompaniment
+
+One can find file size(z) and contents of the remote bucketusing the [s3 command line tool](http://s3tools.org/s3cmd)
+
+```sh
+s3cmd ls s3://yourS3Bucket/"
+s3cmd ls -H  s3://yourS3Bucket/" # Human Readable
+```
