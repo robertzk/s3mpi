@@ -3,6 +3,47 @@ S3 MPI [![Build Status](https://travis-ci.org/robertzk/s3mpi.svg?branch=master)]
 
 R message passing interface using S3 storage.
 
+You can store any R object to S3:
+
+```R
+s3mpi::s3store(obj, "s3key/for/your/object")
+```
+
+You can then read it back from S3 in any R session:
+
+```R
+s3mpi::s3read("s3key/for/your/object")
+```
+
+
+#### Installing the Package
+
+```R
+if (!require("devtools")) { install.packages("devtools") }
+devtools::install_github("robertzk/s3mpi")
+```
+
+
+#### Setting Up S3MPI
+
+To get S3MPI to work, you first have to [set up an account on Amazon S3](https://aws.amazon.com/s3/) and get an S3 bucket.
+
+After you have a bucket, add your Amazon keys to your `.bash_profile` / `.zshrc`:
+
+```
+export AWS_ACCESS_KEY_ID=PUTYOURACCESSKEYHERE
+export AWS_SECRET_ACCESS_KEY=PUTYOURSECRETKEYHERE
+```
+
+Then add the following to your `~/.Rprofile`:
+
+```R
+options(s3mpi.path = "s3://yourS3Bucket/")
+```
+
+
+#### Local Caching
+
 You can enable local caching of downloaded and uploaded files using:
 
 ```R
@@ -15,3 +56,7 @@ to determine whether the value is invalidated (i.e., if someone updated the obje
 If you wish to skip this check and read directly from the cache when you do not
 have an internet connection, set `options(s3mpi.skip_connection_check = TRUE)`.
 
+
+#### Ruby and Python Versions
+
+You can also use S3MPI in [Ruby](https://github.com/robertzk/s3mpi-ruby) and in [Python](https://github.com/robertzk/s3mpy).
