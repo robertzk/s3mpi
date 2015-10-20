@@ -20,6 +20,8 @@ s3mpi::s3read("s3key/for/your/object")
 
 ```R
 if (!require("devtools")) { install.packages("devtools") }
+devtools::install_github("avantcredit/AWS.tools")
+devtools::install_github("kirillseva/cacher")
 devtools::install_github("robertzk/s3mpi")
 ```
 
