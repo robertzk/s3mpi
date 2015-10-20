@@ -1,4 +1,4 @@
-R and AWS S3 [![Build Status](https://travis-ci.org/robertzk/s3mpi.svg?branch=master)](https://travis-ci.org/robertzk/s3mpi) [![Coverage Status](https://coveralls.io/repos/robertzk/s3mpi/badge.png)](https://coveralls.io/r/robertzk/s3mpi)[![Documentation](https://img.shields.io/badge/rocco--docs-%E2%9C%93-blue.svg)](http://robertzk.github.io/s3mpi/)
+R and AWS S3 [![Build Status](https://travis-ci.org/robertzk/s3mpi.svg?branch=master)](https://travis-ci.org/robertzk/s3mpi) [![Coverage Status](https://coveralls.io/repos/robertzk/s3mpi/badge.png)](https://coveralls.io/r/robertzk/s3mpi) [![Documentation](https://img.shields.io/badge/rocco--docs-%E2%9C%93-blue.svg)](http://robertzk.github.io/s3mpi/)
 =========
 
 A common problem for data scientists is passing data or models to each
@@ -126,6 +126,7 @@ One can find file size(z) and contents of the remote bucketusing the [s3 command
 s3cmd ls s3://yourS3Bucket/"
 s3cmd ls -H  s3://yourS3Bucket/some/key" # Human Readable
 ```
+
 ### License
 
 This project is licensed under the MIT License:
