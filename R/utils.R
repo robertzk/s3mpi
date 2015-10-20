@@ -1,5 +1,30 @@
 `%||%` <- function(x, y) if (is.null(x)) y else x
 
+## We use the [memoise](https://github.com/hadley/memoise) package to
+## ensure this check only gets run once in a given R session. This
+## means a user will have to restart R if they install s3cmd
+## during a session, but we are comfortable with that!
+ensure_s3cmd_present <- memoise::memoise(function() {
+  check <- try(system("s3cmd --help", intern = TRUE), silent = TRUE)
+  if (is(check, "try-error")) {
+    ## It is always preferable to make life as easy as possible for the user!
+    ## If they have the [homebrew](https://brew.sh) package manager, we
+    ## give them the fastest installation instructions.
+    if (is.mac() && system2("which", "brew", stdout = FALSE)) {
+      stop("Please install the ", crayon::yellow("s3cmd"), " command-line ",
+           "utility using by running ", crayon::green("brew install s3cmd"),
+           " from your terminal and then configuring your S3 credentials ",
+           "using ", crayon::yellow("s3cmd --configure"), call. = FALSE)
+    } else {
+      ## Otherwise, manual it is!
+      stop("Please install s3cmd, the S3 command line utility: ",
+           "http://s3tools.org/kb/item14.htm\nand then setup your S3 ",
+           "credentials using ", crayon::yellow("s3cmd --configure"),
+           call. = FALSE)
+    }
+  }
+})
+
 s3LRUcache <- cacher::LRUcache(getOption("s3mpi.cache_size", 10))
 
 cache_enabled <- function() {

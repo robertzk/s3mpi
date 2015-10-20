@@ -2,5 +2,5 @@
 #'
 #' @name s3mpi
 #' @docType package
-#' @import AWS.tools stringr digest cacher
+#' @import AWS.tools crayon cacher digest stringr
 NULL
