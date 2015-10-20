@@ -1,8 +1,17 @@
+#' Fetch an R object from an S3 path.
+#'
+#' @param bucket character. A full S3 path.
+#' @param bucket.location character. Usually \code{"US"}.
+#' @param verbose logical. If \code{TRUE}, the \code{s3cmd}
+#'    utility verbose flag will be set.
+#' @param debug logical. If \code{TRUE}, the \code{s3cmd}
+#'    utility debug flag will be set.
+#' @return The R object stored in RDS format on S3 in the \code{bucket} path.
 s3.get <- function (bucket, bucket.location = "US", verbose = FALSE, debug = FALSE) {
   AWS.tools:::check.bucket(bucket)
 
   # Helper function for fetching data from s3
-  fetch <- function(){
+  fetch <- function() {
     x.serialized <- tempfile()
     on.exit(unlink(x.serialized), add = TRUE)
 
