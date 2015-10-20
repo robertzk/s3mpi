@@ -1,3 +1,4 @@
+## A standard helper: if `x` is null, `y` will be returned instead.
 `%||%` <- function(x, y) if (is.null(x)) y else x
 
 ## We use the [memoise](https://github.com/hadley/memoise) package to
@@ -25,6 +26,8 @@ ensure_s3cmd_present <- memoise::memoise(function() {
   }
 })
 
+## A sexy [least recently used cache](http://mcicpc.cs.atu.edu/archives/2012/mcpc2012/lru/lru.html)
+## using [the cacher package](https://github.com/kirillseva/cacher).
 s3LRUcache <- cacher::LRUcache(getOption("s3mpi.cache_size", 10))
 
 cache_enabled <- function() {
