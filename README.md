@@ -2,7 +2,7 @@ R and AWS S3 [![Build Status](https://travis-ci.org/robertzk/s3mpi.svg?branch=ma
 =========
 
 A common problem for data scientists is passing data or models to each
-other without interrupting their workflow. There are typically two approach:
+other without interrupting their workflow. There are typically two approaches:
 
   1. Writing CSV and RDS files and passing them around using tools like
      email, Dropbox, or SFTP. Typically, these files are too large for
@@ -15,7 +15,7 @@ The former works well for small teams consisting of 1-3 people but soon
 becomes prohibitive. Additionally, tracking the array of files and outputs
 soon becomes cumbersome and interrupts the data scientist's workflow.
 
-The latter is an inevitable progression for any sufficiently large data
+The second option is an inevitable progression for any sufficiently large data
 team, but requires major coordination with software or data engineers
 and may not be practical for small teams or experimental projects. It is
 also usually limited by well-defined specification of the formats that
@@ -24,7 +24,7 @@ are being passed into consoles and outputted to data storage systems.
 On the other hand, S3mpi (S3 [*message passing interface*](https://en.wikipedia.org/wiki/Message_Passing_Interface),
 affectionately named after the distributed message passing library) 
 allows for **storage and serialization of arbitrary R objects** and does
-not have the limits of the second approach, while allowing for **on-demand
+not have the limits of the second approach, while providing **on-demand
 access to stored data and objects**, avoiding the need for large amounts of
 disk space locally.
 
@@ -40,14 +40,15 @@ Assuming you have set up your [S3 configuration](http://s3tools.org/kb/item14.ht
 correctly (see the tutorial below), you can immediately get started with:
 
 ```R
-s3mpi::s3store(obj, "s3key/for/your/object")
+library(s3mpi)
+s3store(obj, "s3key/for/your/object")
 ```
 
 You can then read it back from S3 in any R session running on a machine with
 compatible S3 credentials:
 
 ```R
-s3mpi::s3read("s3key/for/your/object")
+s3read("s3key/for/your/object")
 ```
 
 Paired with [chat-driven development](https://sameroom.io/blog/self-hosted-team-chat-options-and-alternatives/)
@@ -59,7 +60,7 @@ the results within seconds for inspection, modification, or further analysis.
 
 This package is not currently available on CRAN and has several non-CRAN
 dependencies. First, ensure you have the [s3cmd](http://s3tools.org/s3cmd) command-line
-tool installed. If you are on OS X, you can simply run [brew install s3cmd] if
+tool installed. If you are on OS X, you can simply run `brew install s3cmd` if
 you have [homebrew](http://brew.sh/). Next, you will have to copy the [example
 `.s3cfg`](http://s3tools.org/kb/item14.htm) file and place it in `~/.s3cfg` (or
 generate it using `s3cmd --configure`) and then obtain
@@ -87,6 +88,15 @@ in your `~/.Rprofile`:
 
 ```R
 options(s3mpi.path = "s3://yourS3Bucket/")
+```
+
+If you do not specify a default S3 path, you will have to include it
+manually as the second parameter:
+
+```R
+s3store(obj, "s3key/for/your/object", "s3://somebucket/")
+# From another R session
+s3read("s3key/for/your/object", "s3://somebucket/")
 ```
 
 #### Alternative S3 key setup
@@ -120,11 +130,12 @@ You can also use S3MPI in [Ruby](https://github.com/robertzk/s3mpi-ruby) and in 
 
 #### Command Line Accompaniment
 
-One can find file size(z) and contents of the remote bucketusing the [s3 command line tool](http://s3tools.org/s3cmd)
+One can find file size(s) and contents of the remote bucket 
+using the [s3 command line tool](http://s3tools.org/s3cmd):
 
 ```sh
-s3cmd ls s3://yourS3Bucket/"
-s3cmd ls -H  s3://yourS3Bucket/some/key" # Human Readable
+s3cmd ls s3://yourS3Bucket/some/key"
+s3cmd ls -H  s3://yourS3Bucket/some/key" # Human readable
 ```
 
 ### License
