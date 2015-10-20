@@ -20,7 +20,7 @@ Suggests:
     knitr,
     testthat,
     testthatsomemore
-License: GPL (>= 2)
+License: MIT
 LazyData: true
 Roxygen: list(wrap = FALSE)
 VignetteBuilder: knitr
