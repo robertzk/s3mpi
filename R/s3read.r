@@ -26,6 +26,7 @@
 #' stopifnot(s3read("myfunc")(1, 2) == 5) # R can serialize closures!
 #' } 
 s3read <- function(name, path = s3path(), cache = TRUE, ...) { 
+  stopifnot(isTRUE(cache) || identical(cache, FALSE))
   ## If the user calls simply `s3read()`, we grab the latest uploaded
   ## key. Handy for shouting "Hey can you s3read the data!" from across
   ## the hall.
