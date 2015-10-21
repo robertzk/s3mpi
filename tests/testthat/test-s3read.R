@@ -30,7 +30,7 @@ local({
       expect_equal(s3read("key"), "value")
     })})
   })
-})
+
   test_that("it can fetch unraw values if the caching layer is enabled but is uncached", {
     map <- list2env(list("s3://test/key" = "value"))
     cachedir <- tempdir()
@@ -46,5 +46,6 @@ local({
       expect_equal(s3read("key"), "new_value")
     })})
   })
+})
 
 
