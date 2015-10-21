@@ -26,10 +26,25 @@ local({
     testthatsomemore::package_stub("s3mpi", "s3cache", function(...) "value", {
       expect_equal(s3read("key"), "value")
       map$`s3://test/key` <- "new_value"
-      # Make sure we are not caching.
+      # Make sure we are caching.
       expect_equal(s3read("key"), "value")
     })})
   })
 })
+  test_that("it can fetch unraw values if the caching layer is enabled but is uncached", {
+    map <- list2env(list("s3://test/key" = "value"))
+    cachedir <- tempdir()
+    dir.create(cachedir, FALSE, TRUE)
+    opts <- options(s3mpi.cache = cachedir)
+    on.exit(options(opts), add = TRUE)
+
+    testthatsomemore::package_stub("s3mpi", "s3.get",  function(...) map[[..1]], {
+    testthatsomemore::package_stub("s3mpi", "s3cache", function(...) not_cached, {
+      expect_equal(s3read("key"), "value")
+      map$`s3://test/key` <- "new_value"
+      # Make sure we are not caching.
+      expect_equal(s3read("key"), "new_value")
+    })})
+  })
 
 
