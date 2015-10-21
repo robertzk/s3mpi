@@ -15,9 +15,9 @@ a cache read will be performed instead.}
 }
 \description{
 Fetching large files from the S3 MPI can be expensive when performed
-multiple times. This methods allows one to add a caching layer
+multiple times. This method allows one to add a caching layer
 around S3 fetching. The user should specify the configuration option
-\code{options(s3mpi.cache = 'some/dir')}. The recommended cache
+\code{options(s3mpi.cache = "some/dir")}. The recommended cache
 directory (where files will be stored) is \code{"~/.s3cache"}.
 }
 
