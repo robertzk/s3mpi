@@ -1,3 +1,6 @@
+## The default S3 prefix, for example, `s3://yourbucket/yourprefix/`.
+## You should set this in everyone's `~/.Rprofile` if
+## you are using s3mpi to collaborate in a data science team.
 s3path <- function() {
   path <- getOption("s3mpi.path")
 
@@ -9,3 +12,4 @@ s3path <- function() {
 
   path
 }
+

@@ -6,7 +6,7 @@
 #' @export
 #' @param obj ANY. An R object to save to S3.
 #' @param name character. The S3 key to save to.
-#' @param .path character. The S3 prefix, e.g., "s3://yourbucket/some/path/".
+#' @param path character. The S3 prefix, e.g., "s3://yourbucket/some/path/".
 #' @param safe logical. Whether or not to overwrite existing fails by
 #'    default or error if they exist.
 #' @param ... additional arguments to \code{s3mpi:::s3.put}.
@@ -16,12 +16,12 @@
 #' print(s3read('test123'))
 #' # [1] 1 2 3
 #' }#' 
-s3store <- function(obj, name = NULL, .path = s3path(), safe = FALSE, ...) {
+s3store <- function(obj, name = NULL, path = s3path(), safe = FALSE, ...) {
   if (is.null(name)) name <- deparse(substitute(obj))
-  s3key <- paste(.path, name, sep = "")
-  if (isTRUE(safe) && s3exists(name, .path = .path, ...)) {
+  s3key <- paste(path, name, sep = "")
+  if (isTRUE(safe) && s3exists(name, path = path, ...)) {
     # Using cat prints to stdout as opposed to messages, so it can be seen from syberia::run_model()
-    cat("An object with name", name, "on path", .path,
+    cat("An object with name", name, "on path", path,
         "already exists. Use `safe = FALSE` to overwrite\n", sep = " ")
     stop("-------------------------^")
   }
