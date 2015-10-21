@@ -49,6 +49,11 @@
 #'    \code{"s3mpi.serialize"} attribute, which should be a 1-argument
 #'    function, will be invoked on the object. Otherwise, the \code{"write"}
 #'    key will be invoked. By default, \code{read} is TRUE.
+#' @return A previously possibly non-vanilla R object (that is, 
+#'    an R object that may contain external pointers to non-R objects,
+#'    such as vanilla C structs) converted to a totally vanilla R object
+#'    (for example, by replacing the pointers with \code{\link{raw}} binary data).
+#' @export
 s3normalize <- function(object, read = TRUE) {
   if (utils::object.size(object) == 0) {
     warning("In s3mpi package: size-0 object is being normalized", call. = TRUE)

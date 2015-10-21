@@ -18,6 +18,12 @@ writing to S3, respectively.}
 function, will be invoked on the object. Otherwise, the \code{"write"}
 key will be invoked. By default, \code{read} is TRUE.}
 }
+\value{
+A previously possibly non-vanilla R object (that is,
+   an R object that may contain external pointers to non-R objects,
+   such as vanilla C structs) converted to a totally vanilla R object
+   (for example, by replacing the pointers with \code{\link{raw}} binary data).
+}
 \description{
 R has good foreign function interface bindings to C code. As such,
 certain package authors may wish to optimize their code by keeping
