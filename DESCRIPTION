@@ -1,7 +1,10 @@
 Package: s3mpi
+Type: Package
 Title: R message passing interface using S3 storage
-Description: Easily pass objects like lists or dataframes between consoles
-Version: 0.2.10
+URL: https://github.com/robertzk/s3mpi
+BugReports: https://github.com/robertzk/s3mpi/issues
+Description: Easily pass objects like lists or dataframes between consoles.
+Version: 0.2.11
 Author: Robert Krzyzanowski <technoguyrob@gmail.com>
 Maintainer: Robert Krzyzanowski <technoguyrob@gmail.com>
 Authors@R: c(person("Robert", "Krzyzanowski", email = "technoguyrob@gmail.com",
@@ -11,11 +14,14 @@ Depends:
 Imports:
     AWS.tools,
     cacher,
+    crayon,
     digest,
     stringr
 Suggests:
+    knitr,
     testthat,
     testthatsomemore
-License: GPL (>= 2)
+License: MIT
 LazyData: true
 Roxygen: list(wrap = FALSE)
+VignetteBuilder: knitr

@@ -1,3 +1,9 @@
+# Version 0.2.11
+
+* A stylistic refactor of the package. The `.path` argument
+  has been deprecated in `s3read` and `s3store` in favor of
+  simply `path`.
+
 # Version 0.2.9-10
 
 * Remove the need to type a trailing slash in `.path`.
