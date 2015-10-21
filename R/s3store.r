@@ -37,13 +37,13 @@ s3store <- function(obj, name = NULL, path = s3path(), safe = FALSE, ...) {
 
   s3key <- paste(path, name, sep = "")
   if (isTRUE(safe) && s3exists(name, path = path, ...)) {
-    cat("An object with name", name, "on path", path,
-        "already exists. Use `safe = FALSE` to overwrite\n", sep = " ")
-    stop("-------------------------^")
+    stop("An object with name", name, "on path", path,
+        "already exists. Use `safe = FALSE` to overwrite\n",
+        "-------------------------^")
   }
 
   obj4save <- s3normalize(obj, FALSE)
-  s3mpi:::s3.put(obj4save, s3key, ...)
+  s3.put(obj4save, s3key, ...)
 
   if (!is.null(getOption("s3mpi.cache"))) {
     s3cache(s3key, obj4save)
