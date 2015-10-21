@@ -1,4 +1,4 @@
-context("s3read")
+context("s3store")
 library(testthatsomemore)
 
 local({
@@ -41,17 +41,6 @@ local({
     testthatsomemore::package_stub("s3mpi", "s3.get",  function(...) map[[..1]], {
     testthatsomemore::package_stub("s3mpi", "s3cache", function(...) not_cached, {
       expect_equal(s3read("key"), "value")
-      map$`s3://test/key` <- "new_value"
-      # Make sure we are not caching.
-      expect_equal(s3read("key"), "new_value")
-    })})
-  })
-
-  test_that("it can pick up missing key", {
-    map <- list2env(list("s3://test/key" = "value"))
-    testthatsomemore::package_stub("s3mpi", "grab_latest_file_in_s3_dir", function(...) "key", {
-    testthatsomemore::package_stub("s3mpi", "s3.get", function(...) map[[..1]], {
-      expect_equal(s3read(), "value")
       map$`s3://test/key` <- "new_value"
       # Make sure we are not caching.
       expect_equal(s3read("key"), "new_value")
