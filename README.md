@@ -109,9 +109,10 @@ S3mpi has been used in production-facing environments for:
   
   2. **Logging** supplementation. For example, if you alert your errors to
      a service like [honeybadger](http://honeybadger.io) it is possible to
-     provide additional details my noting the S3 key with an R object containing
+     provide additional details by noting the S3 key with an R object containing
      further information in the notification. This also works with chat-driven
-     development using [hipchat](http://hipchat.com) or [slack](http://slack.com).
+     development using [hipchat](http://hipchat.com) or [slack](http://slack.com)
+     by adding an S3 key with "additional details" to failure notifications.
 
   3. **Caching** of functions that should have deterministic outputs or infrequent
      refresh intervals can be accomplishing by wrapping it with an
@@ -123,14 +124,15 @@ S3mpi has been used in production-facing environments for:
      this information on the local file system.
 
   5. **Collaboration** in data science teams can be massively improved by
-     using `s3store` and `s3read` to quickly pass data sets under investigations
+     using `s3store` and `s3read` to quickly pass data sets under investigation
      between R sessions. ("Hey can you send me the IDs of the customers that
      had a messed up leads record?") This completely eliminates the error-prone
-     email / dropbox alternative.
+     email / dropbox alternative and leaves a paper trail since it is unlikely
+     one would ever need to delete objects from S3.
 
   6. Interfacing with **production environments** during background jobs, especially
      if a compatible [Ruby](https://github.com/robertzk/s3mpi-ruby) or
-     [python](https://github.com/robertzk/s3mpy) API is written. This can be used
+     [Python](https://github.com/robertzk/s3mpy) API is written. This can be used
      to ask an engineer to pull data from a production console, "ruby s3store"
      or "python s3store" it, and seamlessly read it from the R console as an
      R object such as a list or a data.frame. This **narrows the gap between
@@ -140,6 +142,9 @@ S3mpi has been used in production-facing environments for:
      final output in a pre-defined S3 convention. At [Avant](https://github.com/avantcredit),
      this approach is used to store all information about all trained models
      stretching to the beginning of time.
+
+The time required to store and read objects can be massively sped up by
+adopting a workflow where one **sshes into an [EC2 instance](https://aws.amazon.com/ec2/instance-types/)**.
 
 #### Alternative S3 key setup
 
