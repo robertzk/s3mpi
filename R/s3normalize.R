@@ -1,10 +1,11 @@
 s3normalize <- function(object, read = TRUE) {
-  if (object.size(object) == 0) {
-    warning("Size-0 object is being normalized", call. = TRUE)
-    return(NULL)
-  }
-  if (read)
+  if (utils::object.size(object) == 0) {
+    warning("In s3mpi package: size-0 object is being normalized", call. = TRUE)
+    NULL
+  } else if (read) {
     (attr(object, "s3mpi.serialize")$read %||% identity)(object)
-  else
+  } else {
     (attr(object, "s3mpi.serialize")$write %||% identity)(object)
+  }
 }
+

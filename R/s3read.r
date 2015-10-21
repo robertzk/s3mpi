@@ -18,9 +18,9 @@ s3read <- function(name = NULL, .path = s3path(), cache = TRUE, ...) {
   if (is.null(name)) name <- grab_latest_file_in_s3_dir(.path)
 
   if (substr(.path, nchar(.path), nchar(.path)) != "/") { .path <- paste0(.path, "/") }
-  s3key <- paste(.path, name, sep = '')
+  s3key <- paste(.path, name, sep = "")
 
-  if (!isTRUE(cache) || is.null(getOption('s3mpi.cache'))) {
+  if (!isTRUE(cache) || is.null(getOption("s3mpi.cache"))) {
     value <- s3.get(s3key, ...)
   } else if (is.not_cached(value <- s3cache(s3key))) {
     value <- s3.get(s3key, ...)
@@ -28,3 +28,4 @@ s3read <- function(name = NULL, .path = s3path(), cache = TRUE, ...) {
   }
   s3normalize(value, TRUE)
 }
+

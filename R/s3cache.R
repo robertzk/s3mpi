@@ -15,9 +15,10 @@ s3cache <- function(s3key, value) {
     stop("Cannot use s3mpi::s3cache until you set options(s3mpi.cache) ",
          "to a directory in which to place cache contents.")
 
-  dir.create(d <- cache_directory(), FALSE, TRUE)
-  dir.create(file.path(d, 'info'), FALSE, TRUE)
-  dir.create(file.path(d, 'data'), FALSE, TRUE)
+  d <- cache_directory()
+  dir.create(d, FALSE, TRUE)
+  dir.create(file.path(d, "info"), FALSE, TRUE)
+  dir.create(file.path(d, "data"), FALSE, TRUE)
 
   if (missing(value)) fetch_from_cache(s3key, d)
   else save_to_cache(s3key, value, d)
@@ -38,16 +39,16 @@ fetch_from_cache <- function(key, cache_dir) {
   cache_key <- digest::digest(key)
   cache_file <- function(dir) file.path(cache_dir, dir, cache_key)
 
-  if (!file.exists(cache_file('data'))) return(not_cached)
+  if (!file.exists(cache_file("data"))) return(not_cached)
 
-  if (!file.exists(cache_file('info'))) {
+  if (!file.exists(cache_file("info"))) {
     # Somehow the cache became corrupt: data exists without accompanying
     # meta-data. In this case, simply wipe the cache.
-    file.remove(cache_file('data'))
+    file.remove(cache_file("data"))
     return(not_cached)
   }
 
-  info <- readRDS(cache_file('info'))
+  info <- readRDS(cache_file("info"))
   # Check if cache is invalid.
   connected <- has_internet()
   if (!connected) {
@@ -59,7 +60,7 @@ fetch_from_cache <- function(key, cache_dir) {
   if (connected && !identical(info$mtime, last_modified(key))) {
     not_cached
   } else {
-    readRDS(cache_file('data'))
+    readRDS(cache_file("data"))
   }
 }
 
@@ -70,13 +71,12 @@ fetch_from_cache <- function(key, cache_dir) {
 #' @param cache_dir character. The cache directory. The default is 
 #'    \code{cache_directory()}.
 save_to_cache <- function(key, value, cache_dir = cache_directory()) {
-  require(digest)
   cache_key <- digest::digest(key)
   cache_file <- function(dir) file.path(cache_dir, dir, cache_key)
 
-  saveRDS(value, cache_file('data'))
+  saveRDS(value, cache_file("data"))
   info <- list(mtime = last_modified(key), key = key)
-  saveRDS(info, cache_file('info'))
+  saveRDS(info, cache_file("info"))
   invisible(NULL)
 }
 
@@ -86,12 +86,12 @@ save_to_cache <- function(key, value, cache_dir = cache_directory()) {
 #' @return the last modified time or \code{NULL} if it does not exist on S3.
 last_modified <- function(key) {
   if (!has_internet()) { return(as.POSIXct(as.Date("2000-01-01"))) }
-  s3result <- system(paste0('s3cmd ls ', key), intern = TRUE)[1]
+  s3result <- system(paste0("s3cmd ls ", key), intern = TRUE)[1]
   if (is.character(s3result) && !is.na(s3result) && nzchar(s3result)) {
-    strptime(substring(s3result, 1, 16), '%Y-%m-%d %H:%M')
+    strptime(substring(s3result, 1, 16), "%Y-%m-%d %H:%M")
   }
 }
 
-not_cached <- local({ tmp <- list(); class(tmp) <- 'not_cached'; tmp })
+not_cached <- local({ tmp <- list(); class(tmp) <- "not_cached"; tmp })
 is.not_cached <- function(x) identical(x, not_cached)
 
