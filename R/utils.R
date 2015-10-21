@@ -39,6 +39,10 @@ cache_directory <- function() {
   dir
 }
 
+## We ping google.com to ensure the user has an internet connection. If not,
+## we operate in "offline mode" for the whole session, that is, we read
+## from the s3cache if the user has set their `s3mpi.s3cache` option
+## but cannot store or read new keys.
 has_internet <- local({
   has_internet_flag <- NULL
   function() {
