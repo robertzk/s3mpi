@@ -127,14 +127,65 @@
 grab_latest_file_in_s3_dir <- function(path = s3path()) {
   ensure_s3cmd_present()
 
-  paths <- system(paste('s3cmd ls ', path, '*', sep = ''), intern = TRUE)
-  times <- as.POSIXct(substring(paths, 1, 16))
-  latest <- which(max(times) == times)
-  regex <- paste(str_replace(path, '\\/', '\\\\/'), '(.+)', sep = '')
+  paths   <- system2("s3cmd", "ls", paste0(path, "*"), stdout = TRUE)
+  times   <- as.POSIXct(substring(paths, 1, 16))
+  latest  <- which(max(times) == times)
+  regex   <- paste(string::str_replace(path, "\\/", "\\\\/"), "(.+)", sep = "")
   results <- gregexpr(regex, paths, perl = TRUE)
   substring(regmatches(paths, results)[[latest[1]]], 1 + nchar(path))
 }
 </span></code>
+            </pre>
+          </div>
+        </div>
+        <div class="section">
+          <div class="markdown markdown-body">
+            <h1>package.s3mpi.R</h1>
+
+          </div>
+
+          <div class="code">
+            <pre>
+              <code class="R"><span class="spacer"></span></code>
+            </pre>
+          </div>
+        </div>
+        <div class="section">
+          <div class="markdown markdown-body">
+            
+          </div>
+
+          <div class="code">
+            <pre>
+              <code class="R"><span class="spacer">#' Bi-directional communication with R and AWS S3.
+#'
+#' This package provides an interface to read and store arbitrary 
+#' objects from and to Amazon AWS's S3 cloud storage.
+#'
+#' The exported helpers \code{s3read} and \code{s3store}
+#' allow, upon correct configuration of your S3 credentials,
+#' uploading to and downloading from S3 using R's built-in support
+#' for serializing and deserializing arbitrary objects (see
+#' \code{\link{readRDS}} and \code{\link{saveRDS}}).
+#'
+#' @name s3mpi
+#' @docType package
+#' @import AWS.tools crayon cacher digest stringr
+NULL
+</span></code>
+            </pre>
+          </div>
+        </div>
+        <div class="section">
+          <div class="markdown markdown-body">
+            <p>A sexy <a href="http://mcicpc.cs.atu.edu/archives/2012/mcpc2012/lru/lru.html">least recently used cache</a>
+using <a href="https://github.com/kirillseva/cacher">the cacher package</a>.</p>
+
+          </div>
+
+          <div class="code">
+            <pre>
+              <code class="R"><span class="spacer">s3LRUcache <- cacher::LRUcache(getOption("s3mpi.cache_size", 10))</span></code>
             </pre>
           </div>
         </div>
@@ -192,47 +243,147 @@ is.linux <- function() {
 
           <div class="code">
             <pre>
-              <code class="R"><span class="spacer">s3.get <- function (bucket, bucket.location = "US", verbose = FALSE, debug = FALSE) {
-  AWS.tools:::check.bucket(bucket)
+              <code class="R"><span class="spacer">#' Fetch an R object from an S3 path.
+#'
+#' @param path character. A full S3 path.
+#' @param bucket.location character. Usually \code{"US"}.
+#' @param verbose logical. If \code{TRUE}, the \code{s3cmd}
+#'    utility verbose flag will be set.
+#' @param debug logical. If \code{TRUE}, the \code{s3cmd}
+#'    utility debug flag will be set.
+#' @aliases s3.put
+#' @return For \code{s3.get}, the R object stored in RDS format on S3 in the \code{path}.
+#'    For \code{s3.put}, the system exit code from running the \code{s3cmd}
+#'    command line tool to perform the upload.
+s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE) {</span></code>
+            </pre>
+          </div>
+        </div>
+        <div class="section">
+          <div class="markdown markdown-body">
+            <p>This inappropriately-named function actually checks existence
+of a <em>path</em>, not a bucket. </p>
+
+          </div>
+
+          <div class="code">
+            <pre>
+              <code class="R"><span class="spacer">  AWS.tools:::check.bucket(path)
 
   # Helper function for fetching data from s3
-  fetch <- function(){
-    x.serialized <- tempfile()
-    on.exit(unlink(x.serialized), add = TRUE)
+  fetch <- function() {
+    x.serialized <- tempfile()</span></code>
+            </pre>
+          </div>
+        </div>
+        <div class="section">
+          <div class="markdown markdown-body">
+            <p>We remove the file <a href="https://stat.ethz.ch/R-manual/R-patched/library/base/html/on.exit.html">when we exit the function</a>.</p>
 
-    if (file.exists(x.serialized)) unlink(x.serialized, force = TRUE)
-    s3.cmd <- paste("s3cmd get", bucket, x.serialized, paste("--bucket-location",
-    bucket.location), ifelse(verbose, "--verbose --progress",
-    "--no-progress"), ifelse(debug, "--debug", ""))
+          </div>
+
+          <div class="code">
+            <pre>
+              <code class="R"><span class="spacer">    on.exit(unlink(x.serialized), add = TRUE)
+
+    if (file.exists(x.serialized)) {
+      unlink(x.serialized, force = TRUE)
+    }
+</span></code>
+            </pre>
+          </div>
+        </div>
+        <div class="section">
+          <div class="markdown markdown-body">
+            <p>Run the s3cmd tool to fetch the file from S3.</p>
+
+          </div>
+
+          <div class="code">
+            <pre>
+              <code class="R"><span class="spacer">    s3.cmd <- paste("s3cmd get", path, x.serialized, paste("--bucket-location",
+      bucket.location), ifelse(verbose, "--verbose --progress",
+      "--no-progress"), ifelse(debug, "--debug", ""))
     system(s3.cmd)
+</span></code>
+            </pre>
+          </div>
+        </div>
+        <div class="section">
+          <div class="markdown markdown-body">
+            <p>And then read it back in RDS format.</p>
 
-    ans <- readRDS(x.serialized)
-    ans
+          </div>
+
+          <div class="code">
+            <pre>
+              <code class="R"><span class="spacer">    readRDS(x.serialized)
   }
 
-  # Check for the bucket in the cache
-  # If it does not exist, create and return its entry
-  if (!s3LRUcache$exists(bucket)) {
-    ans <- fetch()
-    s3LRUcache$set(bucket, ans)
-  } else{
+  # Check for the path in the cache
+  # If it does not exist, create and return its entry.</span></code>
+            </pre>
+          </div>
+        </div>
+        <div class="section">
+          <div class="markdown markdown-body">
+            <p>The <code>s3LRUcache</code> helper is defined </p>
+
+          </div>
+
+          <div class="code">
+            <pre>
+              <code class="R"><span class="spacer">  if (is.windows()) {</span></code>
+            </pre>
+          </div>
+        </div>
+        <div class="section">
+          <div class="markdown markdown-body">
+            <p>We do not have awk, which we will need for the moment to
+extract the modified time of the S3 object. </p>
+
+          </div>
+
+          <div class="code">
+            <pre>
+              <code class="R"><span class="spacer">    ans <- fetch()
+  } else if (!s3LRUcache$exists(path)) {
+    ans <- fetch()</span></code>
+            </pre>
+          </div>
+        </div>
+        <div class="section">
+          <div class="markdown markdown-body">
+            <p>We store the value of the R object in a <em>least recently used cache</em>,
+expecting the user to not think about optimizing their code and
+call <code>s3read</code> with the same key multiple times in one session. With
+this approach, we keep the latest 10 object in RAM and do not have
+to reload them into memory unnecessarily&ndash;a wise time-space trade-off!</p>
+
+          </div>
+
+          <div class="code">
+            <pre>
+              <code class="R"><span class="spacer">    s3LRUcache$set(path, ans)
+  } else {
     # Check time on s3LRUcache's copy
-    last_cached <- s3LRUcache$last_accessed(bucket) # assumes a POSIXct object
+    last_cached <- s3LRUcache$last_accessed(path) # assumes a POSIXct object
 
     # Check time on s3 remote's copy
-    s3.cmd <- paste("s3cmd ls ", bucket, "| awk '{print $1\" \"$2}' ")
+    s3.cmd <- paste("s3cmd ls ", path, "| awk '{print $1\" \"$2}' ")
     last_updated <- as.POSIXct(system(s3.cmd, intern = TRUE), tz="GMT")
 
-    # Update the cache if remote is newer
+    # Update the cache if remote is newer.
     if (last_updated > last_cached) {
       ans <- fetch()
-      s3LRUcache$set(bucket, ans)
+      s3LRUcache$set(path, ans)
     } else {
-      ans <- s3LRUcache$get(bucket)
+      ans <- s3LRUcache$get(path)
     }
   }
   ans
-}</span></code>
+}
+</span></code>
             </pre>
           </div>
         </div>
@@ -255,20 +406,52 @@ is.linux <- function() {
 
           <div class="code">
             <pre>
-              <code class="R"><span class="spacer"># Overwrite AWS.tools::s3.put because we would like to check md5.
-s3.put <- function (x, bucket, bucket.location = "US", verbose = FALSE,
-    debug = FALSE, encrypt = FALSE) {
-    AWS.tools:::check.bucket(bucket)
-    x.serialized <- tempfile()
-    saveRDS(x, x.serialized)
-    s3.cmd <- paste("s3cmd put", x.serialized, bucket, ifelse(encrypt,
-        "--encrypt", ""), paste("--bucket-location", bucket.location),
-        ifelse(verbose, "--verbose --progress", "--no-progress"), ifelse(debug,
-            "--debug", ""), '--check-md5')
-    res <- system(s3.cmd, intern = TRUE)
-    unlink(x.serialized)
-    res
-}</span></code>
+              <code class="R"><span class="spacer">#' @param encrypt logical. Whether or not to encrypt the serialized R
+#'    object prior to upload it to S3.
+#' @param x ANY. R object to store to S3.
+#' @rdname s3.get
+s3.put <- function (x, path, bucket.location = "US", verbose = FALSE,
+                    debug = FALSE, encrypt = FALSE) {</span></code>
+            </pre>
+          </div>
+        </div>
+        <div class="section">
+          <div class="markdown markdown-body">
+            <p>This inappropriately-named function actually checks existence
+of a <em>path</em>, not a bucket. </p>
+
+          </div>
+
+          <div class="code">
+            <pre>
+              <code class="R"><span class="spacer">  AWS.tools:::check.bucket(path)
+</span></code>
+            </pre>
+          </div>
+        </div>
+        <div class="section">
+          <div class="markdown markdown-body">
+            <p>We create a temporary file, <em>write</em> the R object to the file, and then
+upload that file to S3. This magic works thanks to R&#39;s fantastic 
+support for <a href="https://stat.ethz.ch/R-manual/R-patched/library/base/html/readRDS.html">arbitrary serialization</a>
+(including closures!).</p>
+
+          </div>
+
+          <div class="code">
+            <pre>
+              <code class="R"><span class="spacer">  x.serialized <- tempfile()
+  on.exit(unlink(x.serialized, force = TRUE), add = TRUE)
+  saveRDS(x, x.serialized)
+
+  s3.cmd <- paste("s3cmd put", x.serialized, path, ifelse(encrypt,
+      "--encrypt", ""), paste("--bucket-location", bucket.location),
+      ifelse(verbose, "--verbose --progress", "--no-progress"), ifelse(debug,
+          "--debug", ""), '--check-md5')
+
+  system(s3.cmd, intern = TRUE)
+}
+</span></code>
             </pre>
           </div>
         </div>
@@ -286,7 +469,24 @@ s3.put <- function (x, bucket, bucket.location = "US", verbose = FALSE,
         </div>
         <div class="section">
           <div class="markdown markdown-body">
-            
+            <p>If we are frequently using <code>s3read</code> and <code>s3store</code> from within an
+active R session, it is likely that we will need to pull the stored
+object multiple times. For example, if we have the training data
+set for a model or a list with some summary statistics, we may be
+pulling this frequently when performing analysis during a week-long
+project.</p>
+
+<p>To facilitate this process and speed things up a bit, we keep a 
+local <em>file system cache</em> of the objects downloaded from S3 using
+<code>s3read</code>. If the user has set their <code>s3mpi.cache</code> option to a
+directory path (by default <code>~/.s3cache</code>), we will use that directory
+to store downloaded R objects. The second time a user calls
+<code>s3read(&quot;some/key&quot;)</code> we will fetch it from the local file system
+instead of spending time re-downloading the object.</p>
+
+<p>This functionality should be disabled if we regularly are storing
+and pulling objects that in aggregate exceed the user&#39;s available disk space.</p>
+
           </div>
 
           <div class="code">
@@ -294,9 +494,9 @@ s3.put <- function (x, bucket, bucket.location = "US", verbose = FALSE,
               <code class="R"><span class="spacer">#' A caching layer around s3mpi calls.
 #'
 #' Fetching large files from the S3 MPI can be expensive when performed
-#' multiple times. This methods allows one to add a caching layer
+#' multiple times. This method allows one to add a caching layer
 #' around S3 fetching. The user should specify the configuration option
-#' \code{options(s3mpi.cache = 'some/dir')}. The recommended cache
+#' \code{options(s3mpi.cache = "some/dir")}. The recommended cache
 #' directory (where files will be stored) is \code{"~/.s3cache"}.
 #'
 #' @param s3key character. The full S3 key to attempt to read or write
@@ -304,16 +504,35 @@ s3.put <- function (x, bucket, bucket.location = "US", verbose = FALSE,
 #' @param value ANY. The R object to save in the cache. If missing,
 #'    a cache read will be performed instead.
 s3cache <- function(s3key, value) {
-  if (!cache_enabled())
+  if (!cache_enabled()) {
     stop("Cannot use s3mpi::s3cache until you set options(s3mpi.cache) ",
          "to a directory in which to place cache contents.")
+  }
 
-  dir.create(d <- cache_directory(), FALSE, TRUE)
-  dir.create(file.path(d, 'info'), FALSE, TRUE)
-  dir.create(file.path(d, 'data'), FALSE, TRUE)
+  d <- cache_directory()
+  dir.create(d, FALSE, TRUE)</span></code>
+            </pre>
+          </div>
+        </div>
+        <div class="section">
+          <div class="markdown markdown-body">
+            <p>We will hold the objects in the <code>data</code> subdirectory of the <code>s3mpi.cache</code>
+path and <em>metadata</em> about the objects (such as when it was last modified
+on S3, so we can perform cache invalidation) in the <code>info</code> directory.</p>
 
-  if (missing(value)) fetch_from_cache(s3key, d)
-  else save_to_cache(s3key, value, d)
+          </div>
+
+          <div class="code">
+            <pre>
+              <code class="R"><span class="spacer">  dir.create(file.path(d, "info"), FALSE, TRUE)
+  dir.create(file.path(d, "data"), FALSE, TRUE)
+
+  # If no value to store was provided, we assume we are reading from the cache.
+  if (missing(value)) {
+    fetch_from_cache(s3key, d)
+  } else { # Otherwise, we are writing to it.
+    save_to_cache(s3key, value, d)
+  }      
 }
 
 #' Helper function for fetching a file from a cache directory.
@@ -327,20 +546,34 @@ s3cache <- function(s3key, value) {
 #'    \code{cache_directory()}.
 #' @return the cached object if the cache has not invalidated. Otherwise,
 #'   return \code{s3mpi::not_cached}.
-fetch_from_cache <- function(key, cache_dir) {
-  cache_key <- digest::digest(key)
+fetch_from_cache <- function(key, cache_dir) {</span></code>
+            </pre>
+          </div>
+        </div>
+        <div class="section">
+          <div class="markdown markdown-body">
+            <p>We use an <a href="https://en.wikipedia.org/wiki/MD5">MD5 hash</a> to convert an
+arbitrary R object to a 32-character string representation. We use this
+as an implicit hash table in the file system so we do not have to deal
+with keys that cause conflicts with the file system (such as &ldquo;../blah&rdquo;).</p>
+
+          </div>
+
+          <div class="code">
+            <pre>
+              <code class="R"><span class="spacer">  cache_key <- digest::digest(key)
   cache_file <- function(dir) file.path(cache_dir, dir, cache_key)
 
-  if (!file.exists(cache_file('data'))) return(not_cached)
+  if (!file.exists(cache_file("data"))) return(not_cached)
 
-  if (!file.exists(cache_file('info'))) {
+  if (!file.exists(cache_file("info"))) {
     # Somehow the cache became corrupt: data exists without accompanying
     # meta-data. In this case, simply wipe the cache.
-    file.remove(cache_file('data'))
+    file.remove(cache_file("data"))
     return(not_cached)
   }
 
-  info <- readRDS(cache_file('info'))
+  info <- readRDS(cache_file("info"))
   # Check if cache is invalid.
   connected <- has_internet()
   if (!connected) {
@@ -348,11 +581,23 @@ fetch_from_cache <- function(key, cache_dir) {
             "use the latest cache entries instead of pulling from S3.",
             call. = FALSE, immediate. = FALSE)
   }
+</span></code>
+            </pre>
+          </div>
+        </div>
+        <div class="section">
+          <div class="markdown markdown-body">
+            <p>If the modification time has changed since we last cached the
+value, re-pull it from S3 and wipe the cache.</p>
 
-  if (connected && !identical(info$mtime, last_modified(key))) {
+          </div>
+
+          <div class="code">
+            <pre>
+              <code class="R"><span class="spacer">  if (connected && !identical(info$mtime, last_modified(key))) {
     not_cached
   } else {
-    readRDS(cache_file('data'))
+    readRDS(cache_file("data"))
   }
 }
 
@@ -363,13 +608,12 @@ fetch_from_cache <- function(key, cache_dir) {
 #' @param cache_dir character. The cache directory. The default is 
 #'    \code{cache_directory()}.
 save_to_cache <- function(key, value, cache_dir = cache_directory()) {
-  require(digest)
-  cache_key <- digest::digest(key)
+  cache_key  <- digest::digest(key)
   cache_file <- function(dir) file.path(cache_dir, dir, cache_key)
 
-  saveRDS(value, cache_file('data'))
+  saveRDS(value, cache_file("data"))
   info <- list(mtime = last_modified(key), key = key)
-  saveRDS(info, cache_file('info'))
+  saveRDS(info, cache_file("info"))
   invisible(NULL)
 }
 
@@ -377,15 +621,53 @@ save_to_cache <- function(key, value, cache_dir = cache_directory()) {
 #'
 #' @param key character. The s3 key of the object.
 #' @return the last modified time or \code{NULL} if it does not exist on S3.
-last_modified <- function(key) {
-  if (!has_internet()) { return(as.POSIXct(as.Date("2000-01-01"))) }
-  s3result <- system(paste0('s3cmd ls ', key), intern = TRUE)[1]
-  if (is.character(s3result) && !is.na(s3result) && nzchar(s3result)) {
-    strptime(substring(s3result, 1, 16), '%Y-%m-%d %H:%M')
+last_modified <- function(key) {</span></code>
+            </pre>
+          </div>
+        </div>
+        <div class="section">
+          <div class="markdown markdown-body">
+            <p>If the user doesn&#39;t have internet, assume the file hasn&#39;t changed
+since we can&#39;t figure out if it has! Here, we simply pull from
+the cache.</p>
+
+          </div>
+
+          <div class="code">
+            <pre>
+              <code class="R"><span class="spacer">  if (!has_internet()) { return(as.POSIXct(as.Date("2000-01-01"))) }
+  s3result <- system(paste0("s3cmd ls ", key), intern = TRUE)[1L]
+  if (is.character(s3result) && !is.na(s3result) && nzchar(s3result)) {</span></code>
+            </pre>
+          </div>
+        </div>
+        <div class="section">
+          <div class="markdown markdown-body">
+            <p>We use <a href="https://stat.ethz.ch/R-manual/R-patched/library/base/html/strptime.html"><code>strptime</code></a>
+to extract the modification time from the <code>s3cmd ls</code> query.</p>
+
+          </div>
+
+          <div class="code">
+            <pre>
+              <code class="R"><span class="spacer">    strptime(substring(s3result, 1, 16), "%Y-%m-%d %H:%M")
   }
 }
+</span></code>
+            </pre>
+          </div>
+        </div>
+        <div class="section">
+          <div class="markdown markdown-body">
+            <p>This is a special object we use to signify the object is not
+cached. We assume no one will try to <code>s3store</code> an object with
+class <code>&quot;not_cached&quot;</code>!</p>
 
-not_cached <- local({ tmp <- list(); class(tmp) <- 'not_cached'; tmp })
+          </div>
+
+          <div class="code">
+            <pre>
+              <code class="R"><span class="spacer">not_cached <- local({ tmp <- list(); class(tmp) <- "not_cached"; tmp })
 is.not_cached <- function(x) identical(x, not_cached)
 </span></code>
             </pre>
@@ -410,54 +692,46 @@ is.not_cached <- function(x) identical(x, not_cached)
 
           <div class="code">
             <pre>
-              <code class="R"><span class="spacer">#' Determine whether object exists on S3
+              <code class="R"><span class="spacer">#' Determine whether object exists on S3.
 #' 
 #' Test whether or not the given object exists at the 
-#' give S3 path
+#' give S3 path.
 #'
 #' @param name string. Name of file to look for
 #' @param path string. Path to file.  If missing, the entire s3 path must be provided in name.
-
 #' @export
-s3exists <- function(name, .path = s3path(), ...) {
-  if (is.null(name)) return(FALSE)  # issue #22
-  s3key <- paste(.path, name, sep = '')
-  s3key <- gsub('/$', '', s3key) # strip terminal /
-  if (!grepl('^s3://', s3key)) stop("s3 paths must begin with \"s3://\"")
-  s3cmd <- paste('s3cmd ls', s3key)
-  results <- system(s3cmd, intern = TRUE)
-  sum(grepl(paste(s3key, '(/[0-9A-Za-z]+)*/?$', sep = ''), results)) > 0
-}
-
-</span></code>
-            </pre>
-          </div>
-        </div>
-        <div class="section">
-          <div class="markdown markdown-body">
-            <h1>s3mpi-package.r</h1>
-
-          </div>
-
-          <div class="code">
-            <pre>
-              <code class="R"><span class="spacer"></span></code>
-            </pre>
-          </div>
-        </div>
-        <div class="section">
-          <div class="markdown markdown-body">
-            
-          </div>
-
-          <div class="code">
-            <pre>
-              <code class="R"><span class="spacer">#' s3mpi
+#' @examples \dontrun{
+#' s3exists("my/key") # Will look in bucket given by getOption("s3mpi.path")
+#'   # For example, if this option is "s3://mybucket/", then this query
+#'   # will check for existence of the \code{s3://mybucket/my/key} S3 path.
 #'
-#' @name s3mpi
-#' @docType package
-#' @import AWS.tools crayon cacher digest stringr
-NULL</span></code>
+#' s3exists("my/key", "s3://anotherbucket/") # We can of course change the bucket.
+#' }
+s3exists <- function(name, path = s3path()) {
+  if (is.null(name)) return(FALSE)  # https://github.com/robertzk/s3mpi/issues/22
+  s3key <- paste(path, name, sep = "")
+  s3key <- gsub("/$", "", s3key) # strip terminal /
+  if (!grepl("^s3://", s3key)) {
+    stop("s3 paths must begin with \"s3://\"")
+  }
+
+  s3cmd   <- paste("s3cmd ls", s3key)
+  results <- system(s3cmd, intern = TRUE)</span></code>
+            </pre>
+          </div>
+        </div>
+        <div class="section">
+          <div class="markdown markdown-body">
+            <p>We know that we key exists if a result was returned, i.e., the
+shown regex gives a match.</p>
+
+          </div>
+
+          <div class="code">
+            <pre>
+              <code class="R"><span class="spacer">  sum(grepl(paste(s3key, "(/[0-9A-Za-z]+)*/?$", sep = ""), results)) > 0
+}
+</span></code>
             </pre>
           </div>
         </div>
@@ -475,21 +749,77 @@ NULL</span></code>
         </div>
         <div class="section">
           <div class="markdown markdown-body">
-            
+            <p>The roxygen documentation here is pretty thorough. In effect, if
+we wish to use s3mpi to store C, Java, etc. objects that are
+needed for our R code to run, we can do something like:</p>
+
+<pre><code class="r">obj &lt;- list(atomic_vector = 1:10, external_object = ptr_to_c_object)
+attr(obj, &quot;s3mpi.serialize&quot;) &lt;- list(
+  &quot;write&quot; = function(object) {
+     obj$external_object &lt;- convert_ptr_to_raw_vector(obj$external_object)
+  },
+  &quot;read&quot; = function(object) {
+     obj$external_object &lt;- convert_raw_vector_to_ptr(obj$external_object)
+  })
+
+s3store(obj, &quot;some/key&quot;) # Will invoke the write function prior to 
+   # calling saveRDS and uploading the serialized object.
+s3read(&quot;some/key&quot;) # Will invoke the read function after downloading
+   # the serialized object and calling readRDS.
+</code></pre>
+
           </div>
 
           <div class="code">
             <pre>
-              <code class="R"><span class="spacer">s3normalize <- function(object, read = TRUE) {
-  if (object.size(object) == 0) {
-    warning("Size-0 object is being normalized", call. = TRUE)
-    return(NULL)
-  }
-  if (read)
+              <code class="R"><span class="spacer">#' Convert a possibly non-serializable R object to a serializable R object.
+#'
+#' R has good foreign function interface bindings to C code. As such,
+#' certain package authors may wish to optimize their code by keeping
+#' their objects in C structures instead of R SEXPs (the standard for
+#' object representation in the R interpreter). This also applies
+#' to bindings to external libraries. The speed advantage can be
+#' substantial, so this is not an uncommon use case. The \code{s3normalize}
+#' helper provides the ability to add an additional "preprocessor"
+#' layer prior to storing an object to S3 that converts a non-serializable
+#' object (such as a list with one of its entries pointing to an 
+#' external C structure) to serialize object (such as that list with
+#' its C structure pointer entry replaced by a \code{\link{raw}} vector).
+#'
+#' If the object being uploaded with \code{s3store} or downloaded wiht
+#' \code{s3read} has an attribute \code{"s3mpi.serialize"} which must
+#' be a list with keys \code{c("read", "write")}, these keys should
+#' hold functions requiring a single argument which are applied to
+#' the object prior to \emph{reading} from (\code{s3read}) and \emph{writing}
+#' to (\code{s3store}) S3, respectively. This allows s3mpi storage
+#' of not only vanilla R objects but \emph{arbitrary objects in memory}
+#' (whether they are internally represented by a C, Rust, Java, etc. process).
+#' 
+#' @param object ANY. The R object to normalize. If it has an
+#'   \code{"s3mpi.serialize"} attribute consisting of a list with
+#'   \code{"read"} and \code{"write"} keys, these arity-1 functions
+#'   will be called with the \code{object} prior to reading from and
+#'   writing to S3, respectively.
+#' @param read logical. If \code{TRUE}, the \code{"read"} key of the
+#'    \code{"s3mpi.serialize"} attribute, which should be a 1-argument
+#'    function, will be invoked on the object. Otherwise, the \code{"write"}
+#'    key will be invoked. By default, \code{read} is TRUE.
+#' @return A previously possibly non-vanilla R object (that is, 
+#'    an R object that may contain external pointers to non-R objects,
+#'    such as vanilla C structs) converted to a totally vanilla R object
+#'    (for example, by replacing the pointers with \code{\link{raw}} binary data).
+#' @export
+s3normalize <- function(object, read = TRUE) {
+  if (utils::object.size(object) == 0) {
+    warning("In s3mpi package: size-0 object is being normalized", call. = TRUE)
+    NULL
+  } else if (read) {
     (attr(object, "s3mpi.serialize")$read %||% identity)(object)
-  else
+  } else {
     (attr(object, "s3mpi.serialize")$write %||% identity)(object)
-}</span></code>
+  }
+}
+</span></code>
             </pre>
           </div>
         </div>
@@ -507,19 +837,26 @@ NULL</span></code>
         </div>
         <div class="section">
           <div class="markdown markdown-body">
-            
+            <p>The default S3 prefix, for example, <code>s3://yourbucket/yourprefix/</code>.
+You should set this in everyone&#39;s <code>~/.Rprofile</code> if
+you are using s3mpi to collaborate in a data science team.</p>
+
           </div>
 
           <div class="code">
             <pre>
               <code class="R"><span class="spacer">s3path <- function() {
-  if(is.null(path <- getOption('s3mpi.path'))) {
-    stop("Please set your s3 path using ",
+  path <- getOption("s3mpi.path")
+
+  if (is.null(path)) {
+    stop("s3mpi package: Please set your s3 path using ",
          "options(s3mpi.path = 's3://your_bucket/your/path/'). ",
          "This is where all of your uploaded R objects will be stored.")
   }
+
   path
-}</span></code>
+}
+</span></code>
             </pre>
           </div>
         </div>
@@ -545,33 +882,73 @@ NULL</span></code>
               <code class="R"><span class="spacer">#' Read an R object in S3 by key
 #' 
 #' Any type of object that can be serialized as an RDS file
-#' is capable of being stored using this interface.
+#' is capable of being read using this interface.
 #'
+#' If you wish to read non-vanilla R objects, such as those
+#' containing external pointers to C structures, see
+#' \code{\link{s3normalize}}.
+#'
+#' @seealso \code{\link{s3store}}
 #' @param name character. The key to grab from S3.
-#' @param .path. The location of your S3 bucket.
-#' @param cache logical. If true, use the local s3cache if available.  If false, do not use cache.
-#'
+#' @param path character. The location of your S3 bucket as a prefix to \code{name},
+#'    for example, \code{"s3://mybucket/"} or \code{"s3://mybucket/myprefix/"}.
+#' @param cache logical. If true, use the local s3cache if available.
+#'    If false, do not use cache. By default, \code{TRUE}. Note this will
+#'    consume local disk space for objects that have been \code{\link{s3read}}.
+#' @param ... Can be used internally to pass more arguments to \code{\link{s3.get}}.
 #' @export
 #' @examples
 #' \dontrun{
-#' s3store(c(1,2,3), 'test123')
-#' print(s3read('test123'))
+#' s3store(c(1,2,3), "test123")
+#' print(s3read("test123"))
 #' # [1] 1 2 3
+#'
+#' s3store(function(x, y) { x + 2 * y }, "myfunc")
+#' stopifnot(s3read("myfunc")(1, 2) == 5) # R can serialize closures!
 #' } 
-s3read <- function(name = NULL, .path = s3path(), cache = TRUE, ...) { 
-  if (is.null(name)) name <- grab_latest_file_in_s3_dir(.path)
+s3read <- function(name, path = s3path(), cache = TRUE, ...) { </span></code>
+            </pre>
+          </div>
+        </div>
+        <div class="section">
+          <div class="markdown markdown-body">
+            <p>If the user calls simply <code>s3read()</code>, we grab the latest uploaded
+key. Handy for shouting &ldquo;Hey can you s3read the data!&rdquo; from across
+the hall.</p>
 
-  if (substr(.path, nchar(.path), nchar(.path)) != "/") { .path <- paste0(.path, "/") }
-  s3key <- paste(.path, name, sep = '')
+          </div>
 
-  if (!isTRUE(cache) || is.null(getOption('s3mpi.cache'))) {
+          <div class="code">
+            <pre>
+              <code class="R"><span class="spacer">  if (missing(name)) {
+    name <- grab_latest_file_in_s3_dir(path)
+  }
+
+  if (substr(path, nchar(path), nchar(path)) != "/") { path <- paste0(path, "/") }
+  s3key <- paste(path, name, sep = "")
+
+  if (!isTRUE(cache) || is.null(getOption("s3mpi.cache"))) {
     value <- s3.get(s3key, ...)
   } else if (is.not_cached(value <- s3cache(s3key))) {
-    value <- s3.get(s3key, ...)
-    s3cache(s3key, value)
+    value <- s3.get(s3key, ...)</span></code>
+            </pre>
+          </div>
+        </div>
+        <div class="section">
+          <div class="markdown markdown-body">
+            <p>If the file system caching layer is enabled, store it to the file system
+before returning the value.</p>
+
+          </div>
+
+          <div class="code">
+            <pre>
+              <code class="R"><span class="spacer">    s3cache(s3key, value)
   }
+
   s3normalize(value, TRUE)
-}</span></code>
+}
+</span></code>
             </pre>
           </div>
         </div>
@@ -594,15 +971,21 @@ s3read <- function(name = NULL, .path = s3path(), cache = TRUE, ...) {
 
           <div class="code">
             <pre>
-              <code class="R"><span class="spacer">#' Store an R object in S3 by key
+              <code class="R"><span class="spacer">#' Store an R object in S3 by key.
 #'
 #' Any type of object that can be serialized as an RDS file
 #' is capable of being retrieved using this interface.
 #'
+#' If you wish to store non-vanilla R objects, such as those
+#' containing external pointers to C structures, see
+#' \code{\link{s3normalize}}.
+#'
 #' @export
+#' @seealso \code{\link{s3read}}
 #' @param obj ANY. An R object to save to S3.
-#' @param name character. The S3 key to save to.
-#' @param .path character. The S3 prefix, e.g., "s3://yourbucket/some/path/".
+#' @param name character. The S3 key to save to. If no key is provided,
+#'    the expression passed as \code{obj} will be used.
+#' @param path character. The S3 prefix, e.g., "s3://yourbucket/some/path/".
 #' @param safe logical. Whether or not to overwrite existing fails by
 #'    default or error if they exist.
 #' @param ... additional arguments to \code{s3mpi:::s3.put}.
@@ -611,20 +994,38 @@ s3read <- function(name = NULL, .path = s3path(), cache = TRUE, ...) {
 #' s3store(c(1,2,3), 'test123')
 #' print(s3read('test123'))
 #' # [1] 1 2 3
-#' }#' 
-s3store <- function(obj, name = NULL, .path = s3path(), safe = FALSE, ...) {
-  if (is.null(name)) name <- deparse(substitute(obj))
-  s3key <- paste(.path, name, sep = '')
-  if (isTRUE(safe) && s3exists(name, .path = .path, ...)) {
-    # using cat prints to stdout as opposed to messages, so it can be seen from syberia::run_model()
-    cat("An object with name", name, "on path", .path,
+#'
+#' s3store(function(x, y) { x + 2 * y }, "myfunc")
+#' stopifnot(s3read("myfunc")(1, 2) == 5) # R can serialize closures!
+#' 
+#' obj <- 1:5
+#' s3store(obj) # If we do not pass a key the path is inferred from
+#'   # the expression using deparse(substitute(...)).
+#' stopifnot(all.equal(s3read("obj"), 1:5)) 
+#' }
+s3store <- function(obj, name = NULL, path = s3path(), safe = FALSE, ...) {
+  if (missing(name)) {
+    name <- deparse(substitute(obj))
+  }
+
+  s3key <- paste(path, name, sep = "")
+  if (isTRUE(safe) && s3exists(name, path = path, ...)) {
+    cat("An object with name", name, "on path", path,
         "already exists. Use `safe = FALSE` to overwrite\n", sep = " ")
     stop("-------------------------^")
   }
+
   obj4save <- s3normalize(obj, FALSE)
   s3mpi:::s3.put(obj4save, s3key, ...)
-  if (!is.null(getOption('s3mpi.cache'))) s3cache(s3key, obj4save)
-  if (is.environment(obj4save)) s3normalize(obj4save) # Revert side effects
+
+  if (!is.null(getOption("s3mpi.cache"))) {
+    s3cache(s3key, obj4save)
+  }
+
+  if (is.environment(obj4save)) {
+    s3normalize(obj4save) # Revert side effects
+  }
+
   invisible(s3key)
 }
 
@@ -632,7 +1033,10 @@ s3store <- function(obj, name = NULL, .path = s3path(), safe = FALSE, ...) {
 #' @rdname s3store
 #' @note \code{s3put} is equivalent to \code{s3store} except that
 #'    it will fail by default if you try to overwrite an existing key.
-s3put <- function(..., safe = TRUE) { s3store(..., safe = safe) }</span></code>
+s3put <- function(..., safe = TRUE) {
+  s3store(..., safe = safe)
+}
+</span></code>
             </pre>
           </div>
         </div>
@@ -688,7 +1092,7 @@ give them the fastest installation instructions.</p>
 
           <div class="code">
             <pre>
-              <code class="R"><span class="spacer">    if (is.mac() && system2("which", "brew", stdout = FALSE)) {
+              <code class="R"><span class="spacer">    if (is.mac() && system2("which", "brew", stdout = FALSE) == 0) {
       stop("Please install the ", crayon::yellow("s3cmd"), " command-line ",
            "utility using by running ", crayon::green("brew install s3cmd"),
            " from your terminal and then configuring your S3 credentials ",
@@ -712,46 +1116,46 @@ give them the fastest installation instructions.</p>
     }
   }
 })
-</span></code>
-            </pre>
-          </div>
-        </div>
-        <div class="section">
-          <div class="markdown markdown-body">
-            <p>A sexy <a href="http://mcicpc.cs.atu.edu/archives/2012/mcpc2012/lru/lru.html">least recently used cache</a>
-using <a href="https://github.com/kirillseva/cacher">the cacher package</a>.</p>
-
-          </div>
-
-          <div class="code">
-            <pre>
-              <code class="R"><span class="spacer">s3LRUcache <- cacher::LRUcache(getOption("s3mpi.cache_size", 10))
 
 cache_enabled <- function() {
   !is.null(tmp <- cache_directory()) && nzchar(tmp)
 }
 
 cache_directory <- function() {
-  dir <- getOption('s3mpi.cache')
+  dir <- getOption("s3mpi.cache")
   if (!is.null(dir) && !(is.character(dir) && length(dir) == 1 && !is.na(dir))) {
-    stop("Please set the ", sQuote("s3mpi.cache"), " to a character ",
+    stop("Please set the ", sQuote("s3mpi.cache"), " option to a character ",
          "vector of length 1 giving a directory path.")
   }
   dir
 }
+</span></code>
+            </pre>
+          </div>
+        </div>
+        <div class="section">
+          <div class="markdown markdown-body">
+            <p>We ping google.com to ensure the user has an internet connection. If not,
+we operate in &ldquo;offline mode&rdquo; for the whole session, that is, we read
+from the s3cache if the user has set their <code>s3mpi.s3cache</code> option
+but cannot store or read new keys.</p>
 
-has_internet <- local({
+          </div>
+
+          <div class="code">
+            <pre>
+              <code class="R"><span class="spacer">has_internet <- local({
   has_internet_flag <- NULL
   function() {
-    if (!is.null(getOption('s3mpi.skip_connection_check'))) return(FALSE)
+    if (!is.null(getOption("s3mpi.skip_connection_check"))) return(FALSE)
     if (!is.null(has_internet_flag)) { return(has_internet_flag) }
     has_internet_flag <<- suppressWarnings({
-      internet_check <- try(file('http://google.com', 'r'))
-      if (!is(internet_check, 'try-error') && is(internet_check, 'connection')) {
+      internet_check <- try(file("http://google.com", "r"))
+      if (!is(internet_check, "try-error") && is(internet_check, "connection")) {
         on.exit(close.connection(internet_check))
       }
-      !(is(internet_check, 'try-error') &&
-        grepl('cannot open', internet_check$message))
+      !(is(internet_check, "try-error") &&
+        grepl("cannot open", internet_check$message))
     })
   }
 })

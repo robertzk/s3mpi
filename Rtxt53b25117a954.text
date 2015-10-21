@@ -1,0 +1,36 @@
+s3.get                  package:s3mpi                  R Documentation
+
+_F_e_t_c_h _a_n _R _o_b_j_e_c_t _f_r_o_m _a_n _S_3 _p_a_t_h.
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     Fetch an R object from an S3 path.
+
+_U_s_a_g_e:
+
+     s3.get(path, bucket.location = "US", verbose = FALSE, debug = FALSE)
+     
+     s3.put(x, path, bucket.location = "US", verbose = FALSE, debug = FALSE,
+       encrypt = FALSE)
+     
+_A_r_g_u_m_e_n_t_s:
+
+    path: character. A full S3 path.
+
+bucket.location: character. Usually ‘"US"’.
+
+ verbose: logical. If ‘TRUE’, the ‘s3cmd’ utility verbose flag will be
+          set.
+
+   debug: logical. If ‘TRUE’, the ‘s3cmd’ utility debug flag will be
+          set.
+
+       x: ANY. R object to store to S3.
+
+ encrypt: logical. Whether or not to encrypt the serialized R object
+          prior to upload it to S3.
+
+_V_a_l_u_e:
+
+     The R object stored in RDS format on S3 in the ‘path’.
+
