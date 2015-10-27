@@ -26,7 +26,7 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
     }
 
     ## Run the s3cmd tool to fetch the file from S3.
-    s3.cmd <- paste("s3cmd get", path, x.serialized, paste("--bucket-location",
+    s3.cmd <- paste("s3cmd get", paste0('"', path, '"'), x.serialized, paste("--bucket-location",
       bucket.location), ifelse(verbose, "--verbose --progress",
       "--no-progress"), ifelse(debug, "--debug", ""))
     system(s3.cmd)
