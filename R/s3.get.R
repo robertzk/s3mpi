@@ -37,7 +37,7 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
 
   ## Check for the path in the cache
   ## If it does not exist, create and return its entry.
-  ## The `s3LRUcache` helper is defined in urils.R
+  ## The `s3LRUcache` helper is defined in utils.R
   if (is.windows()) {
     ## We do not have awk, which we will need for the moment to
     ## extract the modified time of the S3 object.
