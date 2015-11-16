@@ -1,3 +1,7 @@
+# Version 0.2.13
+
+* Fixup LRU cache to actually use size parameter option.
+
 # Version 0.2.11
 
 * A stylistic refactor of the package. The `.path` argument
@@ -22,11 +26,11 @@
 
 # Version 0.2.5-6
 
- * The `s3mpi.memoize_cache` global controls whether or not caching is 
+ * The `s3mpi.memoize_cache` global controls whether or not caching is
    [memoised](https://github.com/hadley/memoise). If set to `TRUE`, it would
    have the effect of keeping a common object in the R session instead of
    retrieving it from the cached file for each given s3 key. This can significantly
-   speed up code that reads from the same S3 key multiple times within a 
+   speed up code that reads from the same S3 key multiple times within a
    single R session.
 
 # Version 0.2.4
@@ -47,4 +51,3 @@
    uploaded to S3. Useful if local storage constraints are not an issue.
    To enable, set `options(s3mpi.cache = '~/.s3cache')` in your `~/.Rprofile`
    (or replace `'~/.s3cache'` with a directory of your choice).
-
