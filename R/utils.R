@@ -1,6 +1,9 @@
 ## A standard helper: if `x` is null, `y` will be returned instead.
 `%||%` <- function(x, y) if (is.null(x)) y else x
 
+## A package specific environment
+.s3mpienv <- new.env()
+
 ## We use the [memoise](https://github.com/hadley/memoise) package to
 ## ensure this check only gets run once in a given R session. This
 ## means a user will have to restart R if they install s3cmd
@@ -59,3 +62,12 @@ has_internet <- local({
   }
 })
 
+## A sexy [least recently used cache](http://mcicpc.cs.atu.edu/archives/2012/mcpc2012/lru/lru.html)
+## using [the cacher package](https://github.com/kirillseva/cacher).
+s3LRUcache <- function() {
+  if (is.null(.s3mpienv$lrucache)) {
+    .s3mpienv$lrucache <- cacher::LRUcache(getOption("s3mpi.cache_size", "2Gb"))
+  } else {
+    .s3mpienv$lrucache
+  }
+}

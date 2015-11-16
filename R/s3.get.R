@@ -12,7 +12,7 @@
 #'    command line tool to perform the upload.
 s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE) {
   ## This inappropriately-named function actually checks existence
-  ## of a *path*, not a bucket. 
+  ## of a *path*, not a bucket.
   AWS.tools:::check.bucket(path)
 
   # Helper function for fetching data from s3
@@ -35,24 +35,24 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
     readRDS(x.serialized)
   }
 
-  # Check for the path in the cache
-  # If it does not exist, create and return its entry.
-  ## The `s3LRUcache` helper is defined 
+  ## Check for the path in the cache
+  ## If it does not exist, create and return its entry.
+  ## The `s3LRUcache` helper is defined in urils.R
   if (is.windows()) {
     ## We do not have awk, which we will need for the moment to
-    ## extract the modified time of the S3 object. 
+    ## extract the modified time of the S3 object.
     ans <- fetch()
-  } else if (!s3LRUcache$exists(path)) {
+  } else if (!s3LRUcache()$exists(path)) {
     ans <- fetch()
     ## We store the value of the R object in a *least recently used cache*,
     ## expecting the user to not think about optimizing their code and
     ## call `s3read` with the same key multiple times in one session. With
     ## this approach, we keep the latest 10 object in RAM and do not have
     ## to reload them into memory unnecessarily--a wise time-space trade-off!
-    s3LRUcache$set(path, ans)
+    s3LRUcache()$set(path, ans)
   } else {
     # Check time on s3LRUcache's copy
-    last_cached <- s3LRUcache$last_accessed(path) # assumes a POSIXct object
+    last_cached <- s3LRUcache()$last_accessed(path) # assumes a POSIXct object
 
     # Check time on s3 remote's copy
     s3.cmd <- paste("s3cmd ls ", path, "| awk '{print $1\" \"$2}' ")
@@ -61,11 +61,10 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
     # Update the cache if remote is newer.
     if (last_updated > last_cached) {
       ans <- fetch()
-      s3LRUcache$set(path, ans)
+      s3LRUcache()$set(path, ans)
     } else {
-      ans <- s3LRUcache$get(path)
+      ans <- s3LRUcache()$get(path)
     }
   }
   ans
 }
-
