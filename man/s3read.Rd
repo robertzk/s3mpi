@@ -4,7 +4,7 @@
 \alias{s3read}
 \title{Read an R object in S3 by key}
 \usage{
-s3read(name, path = s3path(), cache = TRUE, ...)
+s3read(name, path = s3path(), cache = TRUE, serialize = TRUE, ...)
 }
 \arguments{
 \item{name}{character. The key to grab from S3.}
@@ -15,6 +15,8 @@ for example, \code{"s3://mybucket/"} or \code{"s3://mybucket/myprefix/"}.}
 \item{cache}{logical. If true, use the local s3cache if available.
 If false, do not use cache. By default, \code{TRUE}. Note this will
 consume local disk space for objects that have been \code{\link{s3read}}.}
+
+\item{serialize}{logical. If true, use \code{s3normalize} to serialize the model object.}
 
 \item{...}{Can be used internally to pass more arguments to \code{\link{s3.get}}.}
 }
