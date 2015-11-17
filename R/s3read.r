@@ -14,7 +14,7 @@
 #' @param cache logical. If true, use the local s3cache if available.
 #'    If false, do not use cache. By default, \code{TRUE}. Note this will
 #'    consume local disk space for objects that have been \code{\link{s3read}}.
-#' @param serialize logical. If true, use s3normalize to serialize the model object.
+#' @param serialize logical. If true, use \code{s3normalize} to serialize the model object.
 #' @param ... Can be used internally to pass more arguments to \code{\link{s3.get}}.
 #' @export
 #' @examples
