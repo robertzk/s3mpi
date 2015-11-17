@@ -46,7 +46,9 @@ s3read <- function(name, path = s3path(), cache = TRUE, serialize = TRUE, ...) {
     ## before returning the value.
     s3cache(s3key, value)
   }
-  if (isTRUE(serialize)){
+  if (isTRUE(serialize)) {
     s3normalize(value, TRUE)
+  } else {
+    value
   }
 }
