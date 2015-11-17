@@ -1,5 +1,5 @@
 #' Read an R object in S3 by key
-#' 
+#'
 #' Any type of object that can be serialized as an RDS file
 #' is capable of being read using this interface.
 #'
@@ -14,6 +14,7 @@
 #' @param cache logical. If true, use the local s3cache if available.
 #'    If false, do not use cache. By default, \code{TRUE}. Note this will
 #'    consume local disk space for objects that have been \code{\link{s3read}}.
+#' @param serialize logical. If true, use s3normalize to serialize the model object.
 #' @param ... Can be used internally to pass more arguments to \code{\link{s3.get}}.
 #' @export
 #' @examples
@@ -24,8 +25,8 @@
 #'
 #' s3store(function(x, y) { x + 2 * y }, "myfunc")
 #' stopifnot(s3read("myfunc")(1, 2) == 5) # R can serialize closures!
-#' } 
-s3read <- function(name, path = s3path(), cache = TRUE, ...) { 
+#' }
+s3read <- function(name, path = s3path(), cache = TRUE, serialize = TRUE, ...) {
   stopifnot(isTRUE(cache) || identical(cache, FALSE))
   ## If the user calls simply `s3read()`, we grab the latest uploaded
   ## key. Handy for shouting "Hey can you s3read the data!" from across
@@ -45,7 +46,7 @@ s3read <- function(name, path = s3path(), cache = TRUE, ...) {
     ## before returning the value.
     s3cache(s3key, value)
   }
-
-  s3normalize(value, TRUE)
+  if (isTRUE(serialize)){
+    s3normalize(value, TRUE)
+  }
 }
-
