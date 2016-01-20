@@ -1,3 +1,8 @@
+# Version 0.2.15
+
+* Switch to `system2`, which should be more windows friendly, and allow
+  the user to specify path to executable of s3cmd, by setting `options(s3mpi.s3cmd_path = '/usr/local/bin/s3cmd')`
+
 # Version 0.2.13
 
 * Fixup LRU cache to actually use size parameter option.

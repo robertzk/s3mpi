@@ -4,6 +4,13 @@
 ## A package specific environment
 .s3mpienv <- new.env()
 
+##
+s3cmd <- function() {
+  if (isTRUE(nzchar(cmd <- getOption("s3mpi.s3cmd_path")))) {
+    cmd
+  } else { as.character(Sys.which("s3cmd")) }
+}
+
 ## We use the [memoise](https://github.com/hadley/memoise) package to
 ## ensure this check only gets run once in a given R session. This
 ## means a user will have to restart R if they install s3cmd

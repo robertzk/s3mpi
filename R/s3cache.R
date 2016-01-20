@@ -5,7 +5,7 @@
 ## pulling this frequently when performing analysis during a week-long
 ## project.
 ##
-## To facilitate this process and speed things up a bit, we keep a 
+## To facilitate this process and speed things up a bit, we keep a
 ## local *file system cache* of the objects downloaded from S3 using
 ## `s3read`. If the user has set their `s3mpi.cache` option to a
 ## directory path (by default `~/.s3cache`), we will use that directory
@@ -46,7 +46,7 @@ s3cache <- function(s3key, value) {
     fetch_from_cache(s3key, d)
   } else { # Otherwise, we are writing to it.
     save_to_cache(s3key, value, d)
-  }      
+  }
 }
 
 #' Helper function for fetching a file from a cache directory.
@@ -56,7 +56,7 @@ s3cache <- function(s3key, value) {
 #' cached or the cache is invalidated, it will return \code{s3mpi::not_cached}.
 #'
 #' @param key character. The key under which the cache entry is stored.
-#' @param cache_dir character. The cache directory. The default is 
+#' @param cache_dir character. The cache directory. The default is
 #'    \code{cache_directory()}.
 #' @return the cached object if the cache has not invalidated. Otherwise,
 #'   return \code{s3mpi::not_cached}.
@@ -99,7 +99,7 @@ fetch_from_cache <- function(key, cache_dir) {
 #'
 #' @param key character. The key under which the cache entry is stored.
 #' @param value ANY. The R object to save in the cache.
-#' @param cache_dir character. The cache directory. The default is 
+#' @param cache_dir character. The cache directory. The default is
 #'    \code{cache_directory()}.
 save_to_cache <- function(key, value, cache_dir = cache_directory()) {
   cache_key  <- digest::digest(key)
@@ -120,7 +120,7 @@ last_modified <- function(key) {
   ## since we can't figure out if it has! Here, we simply pull from
   ## the cache.
   if (!has_internet()) { return(as.POSIXct(as.Date("2000-01-01"))) }
-  s3result <- system(paste0("s3cmd ls ", key), intern = TRUE)[1L]
+  s3result <- system2(s3cmd(), c("ls", key), stdout = TRUE)[1L]
   if (is.character(s3result) && !is.na(s3result) && nzchar(s3result)) {
     ## We use [`strptime`](https://stat.ethz.ch/R-manual/R-patched/library/base/html/strptime.html)
     ## to extract the modification time from the `s3cmd ls` query.
@@ -133,4 +133,3 @@ last_modified <- function(key) {
 ## class `"not_cached"`!
 not_cached <- local({ tmp <- list(); class(tmp) <- "not_cached"; tmp })
 is.not_cached <- function(x) identical(x, not_cached)
-

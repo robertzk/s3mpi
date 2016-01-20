@@ -24,11 +24,11 @@
 #'
 #' s3store(function(x, y) { x + 2 * y }, "myfunc")
 #' stopifnot(s3read("myfunc")(1, 2) == 5) # R can serialize closures!
-#' 
+#'
 #' obj <- 1:5
 #' s3store(obj) # If we do not pass a key the path is inferred from
 #'   # the expression using deparse(substitute(...)).
-#' stopifnot(all.equal(s3read("obj"), 1:5)) 
+#' stopifnot(all.equal(s3read("obj"), 1:5))
 #' }
 s3store <- function(obj, name = NULL, path = s3path(), safe = FALSE, ...) {
   if (missing(name)) {
@@ -37,9 +37,9 @@ s3store <- function(obj, name = NULL, path = s3path(), safe = FALSE, ...) {
 
   s3key <- paste(path, name, sep = "")
   if (isTRUE(safe) && s3exists(name, path = path, ...)) {
-    stop("An object with name", name, "on path", path,
-        "already exists. Use `safe = FALSE` to overwrite\n",
-        "-------------------------^")
+    stop("An object with name ", name, " on path ", path,
+        " already exists. Use `safe = FALSE` to overwrite\n",
+        "-----------------------^")
   }
 
   obj4save <- s3normalize(obj, FALSE)
@@ -63,4 +63,3 @@ s3store <- function(obj, name = NULL, path = s3path(), safe = FALSE, ...) {
 s3put <- function(..., safe = TRUE) {
   s3store(..., safe = safe)
 }
-
