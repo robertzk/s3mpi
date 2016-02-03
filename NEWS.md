@@ -1,3 +1,8 @@
+# Version 0.2.15
+
+* Introduce an `s3mpi.disable_lru_cache` option as well as
+  silently fail if storage to LRU does not succeed.
+
 # Version 0.2.13
 
 * Fixup LRU cache to actually use size parameter option.

@@ -38,7 +38,7 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
   ## Check for the path in the cache
   ## If it does not exist, create and return its entry.
   ## The `s3LRUcache` helper is defined in utils.R
-  if (is.windows()) {
+  if (is.windows() || isTRUE(getOption("s3mpi.disable_lru_cache"))) {
     ## We do not have awk, which we will need for the moment to
     ## extract the modified time of the S3 object.
     ans <- fetch()
@@ -49,7 +49,7 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
     ## call `s3read` with the same key multiple times in one session. With
     ## this approach, we keep the latest 10 object in RAM and do not have
     ## to reload them into memory unnecessarily--a wise time-space trade-off!
-    s3LRUcache()$set(path, ans)
+    try(s3LRUcache()$set(path, ans), silent = TRUE)
   } else {
     # Check time on s3LRUcache's copy
     last_cached <- s3LRUcache()$last_accessed(path) # assumes a POSIXct object
