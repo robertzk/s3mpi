@@ -49,7 +49,10 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
     ## call `s3read` with the same key multiple times in one session. With
     ## this approach, we keep the latest 10 object in RAM and do not have
     ## to reload them into memory unnecessarily--a wise time-space trade-off!
-    try(s3LRUcache()$set(path, ans), silent = TRUE)
+    tryCatch(s3LRUcache()$set(path, ans), error = function(...) {
+      warning("Failed to store object in LRU cache. Repeated calls to ",
+              "s3read will not benefit from a performance speedup.")
+    })
   } else {
     # Check time on s3LRUcache's copy
     last_cached <- s3LRUcache()$last_accessed(path) # assumes a POSIXct object
