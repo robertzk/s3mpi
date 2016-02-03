@@ -1,7 +1,12 @@
-# Version 0.2.15
+# Version 0.2.16
 
 * Introduce an `s3mpi.disable_lru_cache` option as well as
   silently fail if storage to LRU does not succeed.
+
+# Version 0.2.15
+
+* Switch to `system2`, which should be more windows friendly, and allow
+  the user to specify path to executable of s3cmd, by setting `options(s3mpi.s3cmd_path = '/usr/local/bin/s3cmd')`
 
 # Version 0.2.13
 

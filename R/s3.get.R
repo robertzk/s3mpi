@@ -26,10 +26,10 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
     }
 
     ## Run the s3cmd tool to fetch the file from S3.
-    s3.cmd <- paste("s3cmd get", paste0('"', path, '"'), x.serialized, paste("--bucket-location",
+    s3.cmd <- paste("get", paste0('"', path, '"'), x.serialized, paste("--bucket-location",
       bucket.location), ifelse(verbose, "--verbose --progress",
       "--no-progress"), ifelse(debug, "--debug", ""))
-    system(s3.cmd)
+    system2(s3cmd(), s3.cmd)
 
     ## And then read it back in RDS format.
     readRDS(x.serialized)
@@ -55,8 +55,8 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
     last_cached <- s3LRUcache()$last_accessed(path) # assumes a POSIXct object
 
     # Check time on s3 remote's copy
-    s3.cmd <- paste("s3cmd ls ", path, "| awk '{print $1\" \"$2}' ")
-    last_updated <- as.POSIXct(system(s3.cmd, intern = TRUE), tz="GMT")
+    s3.cmd <- paste("ls ", path, "| awk '{print $1\" \"$2}' ")
+    last_updated <- as.POSIXct(system2(s3cmd(), s3.cmd, stdout = TRUE), tz = "GMT")
 
     # Update the cache if remote is newer.
     if (last_updated > last_cached) {

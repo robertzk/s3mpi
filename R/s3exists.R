@@ -1,6 +1,6 @@
 #' Determine whether object exists on S3.
-#' 
-#' Test whether or not the given object exists at the 
+#'
+#' Test whether or not the given object exists at the
 #' give S3 path.
 #'
 #' @param name string. Name of file to look for
@@ -21,10 +21,8 @@ s3exists <- function(name, path = s3path()) {
     stop("s3 paths must begin with \"s3://\"")
   }
 
-  s3cmd   <- paste("s3cmd ls", s3key)
-  results <- system(s3cmd, intern = TRUE)
+  results <- system2(s3cmd(), paste("ls", s3key), stdout = TRUE)
   ## We know that we key exists if a result was returned, i.e., the
   ## shown regex gives a match.
   sum(grepl(paste(s3key, "(/[0-9A-Za-z]+)*/?$", sep = ""), results)) > 0
 }
-

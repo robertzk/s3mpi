@@ -9,11 +9,10 @@
 grab_latest_file_in_s3_dir <- function(path = s3path()) {
   ensure_s3cmd_present()
 
-  paths   <- system2("s3cmd", "ls", paste0(path, "*"), stdout = TRUE)
+  paths   <- system2(s3cmd(), "ls", paste0(path, "*"), stdout = TRUE)
   times   <- as.POSIXct(substring(paths, 1, 16))
   latest  <- which(max(times) == times)
   regex   <- paste(string::str_replace(path, "\\/", "\\\\/"), "(.+)", sep = "")
   results <- gregexpr(regex, paths, perl = TRUE)
   substring(regmatches(paths, results)[[latest[1]]], 1 + nchar(path))
 }
-
