@@ -23,16 +23,6 @@ local({
     }) }) })
 
 
-  test_that("if no name is provided, it reads from the latest file in S3", {
-    map <- list2env(list("s3://test/key" = "value"))
-    with_mock(
-      `s3mpi:::s3.get` = function(...) map[[..1]],
-      `s3mpi:::s3cache` = function(...) TRUE,
-      `s3mpi:::grab_latest_file_in_s3_dir` = function(...) "key", {
-      expect_equal(s3read(), "value")
-    })
-  })
-
   test_that("it can fetch raw values if the caching layer is disabled", {
     map <- list2env(list("s3://test/key" = "value"))
     with_mock(`s3mpi:::s3.get` = function(...) map[[..1]], {
