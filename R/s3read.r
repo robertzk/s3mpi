@@ -35,7 +35,13 @@ s3read <- function(name, path = s3path(), cache = TRUE, serialize = TRUE, ...) {
     name <- grab_latest_file_in_s3_dir(path)
   }
 
-  if (substr(path, nchar(path), nchar(path)) != "/") { path <- paste0(path, "/") }
+  # All S3 paths need a slash at the end to work, but we don't need the user
+  # to know that, so let's add a slash for them if they forget.
+  last_character <- function(str) {
+    substr(str, nchar(str), nchar(str))
+  }
+  if (last_character(path) != "/") { path <- paste0(path, "/") }
+
   s3key <- paste(path, name, sep = "")
 
   if (!isTRUE(cache) || is.null(getOption("s3mpi.cache"))) {

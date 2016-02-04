@@ -22,6 +22,26 @@ local({
       expect_equal(s3read("key", cache = FALSE, serialize = FALSE), "value")
     }) }) })
 
+  test_that("it can pick up missing key", {
+    map <- list2env(list("s3://test/key" = "value"))
+    with_mock(
+      `s3mpi:::grab_latest_file_in_s3_dir` = function(...) "key",
+      `s3mpi:::s3.get` = function(...) map[[..1]], {
+      expect_equal(s3read(), "value")
+      map$`s3://test/key` <- "new_value"
+      # Make sure we are not caching.
+      expect_equal(s3read("key"), "new_value")
+    })
+  })
+
+  test_that("if the path does not end in a slash, the slash is added", {
+    map <- list2env(list("s3://path/key" = "value"))
+    with_mock(
+      `s3mpi:::grab_latest_file_in_s3_dir` = function(...) "key",
+      `s3mpi:::s3.get` = function(...) map[[..1]], {
+      expect_equal(s3read("key", path = "s3://path"), "value")
+    }) 
+  })
 
   test_that("it can fetch raw values if the caching layer is disabled", {
     map <- list2env(list("s3://test/key" = "value"))
@@ -66,18 +86,4 @@ local({
         expect_equal(s3read("key"), "new_value")
     })
   })
-
-  test_that("it can pick up missing key", {
-    map <- list2env(list("s3://test/key" = "value"))
-    with_mock(
-      `s3mpi:::grab_latest_file_in_s3_dir` = function(...) "key",
-      `s3mpi:::s3.get` = function(...) map[[..1]], {
-      expect_equal(s3read(), "value")
-      map$`s3://test/key` <- "new_value"
-      # Make sure we are not caching.
-      expect_equal(s3read("key"), "new_value")
-    })
-  })
 })
-
-
