@@ -15,8 +15,7 @@ Imports:
     AWS.tools,
     cacher,
     crayon,
-    digest,
-    stringr
+    digest
 Suggests:
     knitr,
     testthat,
