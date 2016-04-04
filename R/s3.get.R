@@ -18,6 +18,7 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
   # Helper function for fetching data from s3
   fetch <- function() {
     x.serialized <- tempfile()
+    dir.create(dirname(x.serialized), showWarnings = FALSE, recursive = TRUE)
     ## We remove the file [when we exit the function](https://stat.ethz.ch/R-manual/R-patched/library/base/html/on.exit.html).
     on.exit(unlink(x.serialized), add = TRUE)
 

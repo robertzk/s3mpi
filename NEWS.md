@@ -1,3 +1,9 @@
+# Version 0.2.17
+
+* Explicitly create the directory of a file given by `tempfile()` to prevent
+  rare errors wherein the directory does not exist and yields a 
+  file connection error. ([#41](https://github.com/robertzk/s3mpi/issues/41))
+
 # Version 0.2.16
 
 * Introduce an `s3mpi.disable_lru_cache` option as well as
