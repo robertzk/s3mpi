@@ -12,7 +12,9 @@ s3.put <- function (x, path, bucket.location = "US", verbose = FALSE,
   ## upload that file to S3. This magic works thanks to R's fantastic
   ## support for [arbitrary serialization](https://stat.ethz.ch/R-manual/R-patched/library/base/html/readRDS.html)
   ## (including closures!).
-  x.serialized <- tempfile(); on.exit(unlink(x.serialized, force = TRUE), add = TRUE)
+  x.serialized <- tempfile();
+  dir.create(dirname(x.serialized), showWarnings = FALSE, recursive = TRUE)
+  on.exit(unlink(x.serialized, force = TRUE), add = TRUE)
   saveRDS(x, x.serialized)
 
   s3.cmd <- paste("put", x.serialized, paste0('"', path, '"'), ifelse(encrypt,
