@@ -20,6 +20,8 @@ Suggests:
     knitr,
     testthat,
     testthatsomemore
+Remotes:
+    kirillseva/cacher
 License: MIT
 LazyData: true
 Roxygen: list(wrap = FALSE)
