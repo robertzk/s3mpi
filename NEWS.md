@@ -1,3 +1,7 @@
+# Version 0.2.18
+
+* Add remotes to DESCRIPTION.
+
 # Version 0.2.17
 
 * Explicitly create the directory of a file given by `tempfile()` to prevent
