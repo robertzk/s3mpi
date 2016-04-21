@@ -1,3 +1,7 @@
+# Version 0.2.19
+
+* Keep AWS.tools on a remote.
+
 # Version 0.2.18
 
 * Add remotes to DESCRIPTION.
