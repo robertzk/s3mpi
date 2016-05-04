@@ -3,7 +3,8 @@
 #' @param x ANY. R object to store to S3.
 #' @rdname s3.get
 s3.put <- function (x, path, bucket.location = "US", verbose = FALSE,
-                    debug = FALSE, encrypt = FALSE) {
+                    debug = FALSE, encrypt = FALSE, check_exists = TRUE,
+                    num_retries = 3) {
   ## This inappropriately-named function actually checks existence
   ## of a *path*, not a bucket.
   AWS.tools:::check.bucket(path)
