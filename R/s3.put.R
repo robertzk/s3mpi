@@ -26,8 +26,7 @@ s3.put <- function (x, path, bucket.location = "US", verbose = FALSE,
   system2(s3cmd(), s3.cmd, stdout = TRUE)
   if (check_exists) {
     retry_count <- 0
-    while (!s3exists(path, bucket.location = bucket.location, verbose = verbose,
-      debug = debug) && retry_count < num_retries) {
+    while (!s3exists(name = bucket.location, path = path) && retry_count < num_retries) {
         system2(s3cmd(), s3.cmd, stdout = TRUE)
         retry_count <- retry_count + 1
     }
