@@ -25,10 +25,6 @@ s3.put <- function (x, path, bucket.location = "US", verbose = FALSE,
 
   system2(s3cmd(), s3.cmd, stdout = TRUE)
   if (check_exists) {
-    exists.cmd <- paste("ls", paste0('"', path, '"'), ifelse(encrypt,
-      "--encrypt", ""), paste("--bucket-location", bucket.location),
-      ifelse(verbose, "--verbose --progress", "--no-progress"), ifelse(debug,
-        "--debug", ""), '--check-md5')
     retry_count <- 0
     while (!s3exists(path, bucket.location = bucket.location, verbose = verbose,
       debug = debug) && retry_count < num_retries) {
