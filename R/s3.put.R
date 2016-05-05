@@ -3,8 +3,8 @@
 #' @param x ANY. R object to store to S3.
 #' @rdname s3.get
 s3.put <- function (x, path, name, bucket.location = "US", verbose = FALSE,
-                    debug = FALSE, encrypt = FALSE, check_exists = FALSE,
-                    num_retries = 3) {
+                    debug = FALSE, encrypt = FALSE, check_exists = TRUE,
+                    num_retries = 0) {
   s3key <- paste(path, name, sep = "")
   ## This inappropriately-named function actually checks existence
   ## of an entire *s3key*, not a bucket.
@@ -24,12 +24,16 @@ s3.put <- function (x, path, name, bucket.location = "US", verbose = FALSE,
       ifelse(verbose, "--verbose --progress", "--no-progress"), ifelse(debug,
           "--debug", ""), '--check-md5')
 
+  run_system_put(path, name, s3.cmd, check_exists, num_retries)
+}
+
+run_system_put <- function(path, name, s3.cmd, check_exists, num_retries) {
   system2(s3cmd(), s3.cmd, stdout = TRUE)
-  if (check_exists) {
-    retry_count <- 0
-    while (!s3exists(name, path) && retry_count < num_retries) {
-        system2(s3cmd(), s3.cmd, stdout = TRUE)
-        retry_count <- retry_count + 1
+  if (isTRUE(check_exists)) {
+    if (!s3exists(name, path) && num_retries > 0) {
+      Recall(path, name, s3.cmd, check_exists, num_retries - 1)
+    } else if (num_retries <= 0) {
+      stop("Object could not be successfully stored.")
     }
   }
 }
