@@ -33,5 +33,3 @@ s3.put <- function (x, path, bucket.location = "US", verbose = FALSE,
     }
   }
 }
-
-
