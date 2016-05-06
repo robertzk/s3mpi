@@ -1,5 +1,11 @@
 # Version 0.2.19
 
+* Workaround for the silent but oh-so-deadly sporadic failure of s3cmd's put.
+  By default we now check for the existence of the object when issuing a put,
+  with the option to retry a number of times.
+
+# Version 0.2.19
+
 * Keep AWS.tools on a remote.
 
 # Version 0.2.18
