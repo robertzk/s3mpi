@@ -61,22 +61,20 @@ local({
 
   test_that("it produces an error when the object isn't found with an s3exists following the s3.put", {
     map <- list2env(list("s3://test/key" = NULL))
-    testthatsomemore::package_stub("s3mpi", "s3exists",  function(...) TRUE, {
-    testthatsomemore::package_stub("AWS.tools", "check.bucket",  function(...) NULL, {
     testthatsomemore::package_stub("base", "system",  function(...) TRUE, {
+    testthatsomemore::package_stub("s3mpi", "s3exists",  function(...) TRUE, {
     testthatsomemore::package_stub("s3mpi", "s3.put", function(...) run_system_put(..2, ..3, "", TRUE, 0), {
       expect_error(s3store("value", "key"))
-    })})})})
+    })})})
   })
 
   test_that("it does not produce an error when the object is found with an s3exists following the s3.put", {
     map <- list2env(list("s3://test/key" = NULL))
-    testthatsomemore::package_stub("s3mpi", "s3exists",  function(...) FALSE, {
-    testthatsomemore::package_stub("AWS.tools", "check.bucket",  function(...) NULL, {
     testthatsomemore::package_stub("base", "system",  function(...) TRUE, {
+    testthatsomemore::package_stub("s3mpi", "s3exists",  function(...) FALSE, {
     testthatsomemore::package_stub("s3mpi", "s3.put", function(...) run_system_put(..2, ..3, "", TRUE, 0), {
       expect_error(s3store("value", "key"), NA)
-    })})})})
+    })})})
   })
 })
 
