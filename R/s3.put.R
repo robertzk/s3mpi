@@ -28,12 +28,14 @@ s3.put <- function (x, path, name, bucket.location = "US", verbose = FALSE,
 }
 
 run_system_put <- function(path, name, s3.cmd, check_exists, num_retries) {
-  system2(s3cmd(), s3.cmd, stdout = TRUE)
-  if (isTRUE(check_exists)) {
-    if (!s3exists(name, path) && num_retries > 0) {
-      Recall(path, name, s3.cmd, check_exists, num_retries - 1)
-    } else if (num_retries <= 0) {
+  ret <- system2(s3cmd(), s3.cmd, stdout = TRUE)
+  if (isTRUE(check_exists) && !s3exists(name, path)) {
+    if (num_retries > 0) {
+      do.call(Recall, `$<-`(as.list(match.call()[-1]), "num_retries", num_retries - 1))
+    } else {
       stop("Object could not be successfully stored.")
     }
+  } else {
+    ret
   }
 }
