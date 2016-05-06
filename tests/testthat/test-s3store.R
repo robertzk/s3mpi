@@ -27,7 +27,7 @@ local({
     map <- list2env(list("s3://test/key" = NULL))
     map2 <- new.env(parent = map)
     testthatsomemore::package_stub("s3mpi", "s3.get",  function(...) map2[[..1]], {
-    testthatsomemore::package_stub("s3mpi", "s3.put", function(...)  map[[paste0(..2, ..3)]] <- ..1, {
+    testthatsomemore::package_stub("s3mpi", "s3.put", function(...)  map2[[paste0(..2, ..3)]] <- ..1, {
       s3store("value", "key")
       expect_equal(s3read("key"), "value")
       map$`s3://test/key` <- "new_value"
