@@ -1,4 +1,4 @@
-# Version 0.2.19
+# Version 0.2.20
 
 * Workaround for the silent but oh-so-deadly sporadic failure of s3cmd's put.
   By default we now check for the existence of the object when issuing a put,
