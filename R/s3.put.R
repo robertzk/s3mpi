@@ -2,11 +2,13 @@
 #'    object prior to upload it to S3.
 #' @param x ANY. R object to store to S3.
 #' @rdname s3.get
-s3.put <- function (x, path, bucket.location = "US", verbose = FALSE,
-                    debug = FALSE, encrypt = FALSE) {
+s3.put <- function (x, path, name, bucket.location = "US", verbose = FALSE,
+                    debug = FALSE, encrypt = FALSE, check_exists = TRUE,
+                    num_retries = 0) {
+  s3key <- paste(path, name, sep = "")
   ## This inappropriately-named function actually checks existence
-  ## of a *path*, not a bucket.
-  AWS.tools:::check.bucket(path)
+  ## of an entire *s3key*, not a bucket.
+  AWS.tools:::check.bucket(s3key)
 
   ## We create a temporary file, *write* the R object to the file, and then
   ## upload that file to S3. This magic works thanks to R's fantastic
@@ -17,10 +19,23 @@ s3.put <- function (x, path, bucket.location = "US", verbose = FALSE,
   on.exit(unlink(x.serialized, force = TRUE), add = TRUE)
   saveRDS(x, x.serialized)
 
-  s3.cmd <- paste("put", x.serialized, paste0('"', path, '"'), ifelse(encrypt,
+  s3.cmd <- paste("put", x.serialized, paste0('"', s3key, '"'), ifelse(encrypt,
       "--encrypt", ""), paste("--bucket-location", bucket.location),
       ifelse(verbose, "--verbose --progress", "--no-progress"), ifelse(debug,
           "--debug", ""), '--check-md5')
 
-  system2(s3cmd(), s3.cmd, stdout = TRUE)
+  run_system_put(path, name, s3.cmd, check_exists, num_retries)
+}
+
+run_system_put <- function(path, name, s3.cmd, check_exists, num_retries) {
+  ret <- system2(s3cmd(), s3.cmd, stdout = TRUE)
+  if (isTRUE(check_exists) && !s3exists(name, path)) {
+    if (num_retries > 0) {
+      do.call(Recall, `$<-`(as.list(match.call()[-1]), "num_retries", num_retries - 1))
+    } else {
+      stop("Object could not be successfully stored.")
+    }
+  } else {
+    ret
+  }
 }
