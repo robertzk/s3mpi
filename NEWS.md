@@ -2,6 +2,9 @@
 
 * Fixed an issue where reading files that have the same prefix as another file
   on the S3 bucket generates a warning.
+* Fix a more serious problem where writing and reading within the same minute
+  produces incorrect results due to the s3cmd utility having *minute*-level
+  rather than second-level granularity.
 
 # Version 0.2.20
 
