@@ -59,7 +59,7 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
     last_cached <- s3LRUcache()$last_accessed(path) # assumes a POSIXct object
 
     # Check time on s3 remote's copy
-    s3.cmd <- paste("ls ", path, "| awk '{print $1\" \"$2}' ")
+    s3.cmd <- paste("ls ", path, "| head -n 1 | awk '{print $1\" \"$2}' ")
     last_updated <- as.POSIXct(system2(s3cmd(), s3.cmd, stdout = TRUE), tz = "GMT")
 
     # Update the cache if remote is newer.

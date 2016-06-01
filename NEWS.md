@@ -1,3 +1,8 @@
+# Version 0.2.21
+
+* Fixed an issue where reading files that have the same prefix as another file
+  on the S3 bucket generates a warning.
+
 # Version 0.2.20
 
 * Workaround for the silent but oh-so-deadly sporadic failure of s3cmd's put.
