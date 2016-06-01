@@ -83,8 +83,8 @@ s3LRUcache <- function() {
 ## If we store an object within the same minute, it will be incorrectly read from
 ## the cache unless we check that the updated_at occurs at a later *minute* than
 ## the cached_at.
-in_later_minute <- function(time1, time2) {
-  round_to_latest_minute(time1) > round_to_latest_minute(time2)
+in_earlier_minute <- function(time1, time2) {
+  round_to_latest_minute(time1) <= round_to_latest_minute(time2)
 }
 
 round_to_latest_minute <- function(time) {

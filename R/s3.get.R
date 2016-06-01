@@ -63,7 +63,7 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
     last_updated <- as.POSIXct(system2(s3cmd(), s3.cmd, stdout = TRUE), tz = "GMT")
 
     # Update the cache if remote is newer by at least a minute.
-    if (in_later_minute(last_updated, last_cached)) {
+    if (in_earlier_minute(last_cached, last_updated)) {
       ans <- fetch()
       s3LRUcache()$set(path, ans)
     } else {
