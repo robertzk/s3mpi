@@ -78,3 +78,16 @@ s3LRUcache <- function() {
     .s3mpienv$lrucache
   }
 }
+
+## The `s3cmd ls` utility produces updated_at times at the granularity of minutes. 
+## If we store an object within the same minute, it will be incorrectly read from
+## the cache unless we check that the updated_at occurs at a later *minute* than
+## the cached_at.
+in_earlier_minute <- function(time1, time2) {
+  round_to_latest_minute(time1) <= round_to_latest_minute(time2)
+}
+
+round_to_latest_minute <- function(time) {
+  as.POSIXct(format(time[1L], "%Y-%m-%d %H:%M:00 %Z", tz = "GMT"))
+}
+
