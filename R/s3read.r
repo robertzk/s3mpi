@@ -28,12 +28,6 @@
 #' }
 s3read <- function(name, path = s3path(), cache = TRUE, serialize = TRUE, ...) {
   stopifnot(isTRUE(cache) || identical(cache, FALSE))
-  ## If the user calls simply `s3read()`, we grab the latest uploaded
-  ## key. Handy for shouting "Hey can you s3read the data!" from across
-  ## the hall.
-  if (missing(name)) {
-    name <- grab_latest_file_in_s3_dir(path)
-  }
 
   # All S3 paths need a slash at the end to work, but we don't need the user
   # to know that, so let's add a slash for them if they forget.

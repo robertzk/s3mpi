@@ -1,3 +1,7 @@
+# Version 0.2.22
+
+* `s3read()` (with no arguments) is no longer supported.
+
 # Version 0.2.21
 
 * Fixed an issue where reading files that have the same prefix as another file
