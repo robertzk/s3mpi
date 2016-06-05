@@ -2,6 +2,7 @@
 
 export(s3exists)
 export(s3normalize)
+export(s3path)
 export(s3put)
 export(s3read)
 export(s3store)

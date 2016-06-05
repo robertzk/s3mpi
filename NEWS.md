@@ -1,3 +1,7 @@
+# Version 0.2.23
+
+* `s3path()` is exported.
+
 # Version 0.2.22
 
 * `s3read()` (with no arguments) is no longer supported.
