@@ -1,7 +1,9 @@
-## The default S3 prefix, for example, `s3://yourbucket/yourprefix/`.
-## You should set this in everyone's `~/.Rprofile` if
-## you are using s3mpi to collaborate in a data science team.
+#' Get your default s3path or error.
+#' @export
 s3path <- function() {
+  ## The default S3 prefix, for example, `s3://yourbucket/yourprefix/`.
+  ## You should set this in everyone's `~/.Rprofile` if
+  ## you are using s3mpi to collaborate in a data science team.
   path <- getOption("s3mpi.path")
 
   if (is.null(path)) {
