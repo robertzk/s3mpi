@@ -1,3 +1,7 @@
+# Version 0.2.24
+
+* Add the ability to delete an object in s3 using `s3delete`.
+
 # Version 0.2.23
 
 * `s3path()` is exported.
