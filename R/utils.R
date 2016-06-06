@@ -91,3 +91,11 @@ round_to_latest_minute <- function(time) {
   as.POSIXct(format(time[1L], "%Y-%m-%d %H:%M:00 %Z", tz = "GMT"))
 }
 
+# All S3 paths need a slash at the end to work, but we don't need the user
+# to know that, so let's add a slash for them if they forget.
+add_ending_slash <- function(path) {
+  last_character <- function(str) {
+    substr(str, nchar(str), nchar(str))
+  }
+  if (last_character(path) != "/") { path <- paste0(path, "/") }
+}
