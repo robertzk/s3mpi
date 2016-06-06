@@ -4,10 +4,10 @@
 \alias{s3delete}
 \title{Delete an R object from S3 by key}
 \usage{
-s3delete(name, path = s3path())
+s3delete(key, path = s3path())
 }
 \arguments{
-\item{name}{character. The key to delete from S3.}
+\item{key}{character. The key to delete from S3.}
 
 \item{path}{character. The location of your S3 bucket as a prefix to \code{name},
 for example, \code{"s3://mybucket/"} or \code{"s3://mybucket/myprefix/"}.}
