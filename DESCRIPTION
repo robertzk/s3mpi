@@ -18,6 +18,7 @@ Imports:
     digest
 Suggests:
     knitr,
+    withr,
     testthat,
     testthatsomemore
 Remotes: kirillseva/cacher,
