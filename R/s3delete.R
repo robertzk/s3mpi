@@ -6,5 +6,6 @@
 #'    for example, \code{"s3://mybucket/"} or \code{"s3://mybucket/myprefix/"}.
 #' @export
 s3delete <- function(name, path = s3path()) {
+  path <- add_ending_slash(path)
   system2(s3cmd(), paste0("del ", path, "/", key))
 }
