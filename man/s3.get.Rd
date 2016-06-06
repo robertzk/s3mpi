@@ -30,7 +30,7 @@ object prior to upload it to S3.}
 
 \item{check_exists}{logical. Wheter or not to check if an object already exists at the specificed location.}
 
-\item{numeric.}{the number of times to retry uploading.}
+\item{num_retries}{numeric. the number of times to retry uploading.}
 }
 \value{
 For \code{s3.get}, the R object stored in RDS format on S3 in the \code{path}.

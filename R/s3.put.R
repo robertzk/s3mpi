@@ -2,7 +2,7 @@
 #'    object prior to upload it to S3.
 #' @param x ANY. R object to store to S3.
 #' @param name character.
-#' @param numeric. the number of times to retry uploading.
+#' @param num_retries numeric. the number of times to retry uploading.
 #' @param check_exists logical. Wheter or not to check if an object already exists at the specificed location.
 #' @rdname s3.get
 s3.put <- function (x, path, name, bucket.location = "US", verbose = FALSE,
