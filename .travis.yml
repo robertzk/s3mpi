@@ -28,12 +28,11 @@ before_script:
   - Rscript -e 'if (!require("stringr")) devtools::install_github("hadley/stringr")'
   - Rscript -e 'if (!require("testthat")) devtools::install_github("hadley/testthat")'
   - Rscript -e 'if (!require("testthatsomemore")) devtools::install_github("robertzk/testthatsomemore")'
-  - Rscript -e 'if (!require("lintr")) devtools::install_github("jimhester/lintr")'
   - Rscript -e 'if (!require("covr")) devtools::install_github("jimhester/covr")'
   - Rscript -e 'if (!require("checkr") || packageVersion("checkr") < package_version("0.0.4.9007")) { devtools::install_github("peterhurford/checkr") }'
   - Rscript -e 'devtools::install_deps(repos = "http://cran.rstudio.com", dependencies = TRUE)'
 script:
-  - Rscript -e 'try(devtools::install(".")); r <- rcmdcheck::rcmdcheck(".", args = c("--no-manual")); l <- lintr::lint_package("."); print(l); quit(save = "no", status = if (length(c(r$errors, r$warnings, l)) > 1 || grepl("FAILED", r$output$stdout) || !checkr::package_exports_checked(".")) { 1 } else { 0 }, runLast = FALSE)'
+  - Rscript -e 'try(devtools::install(".")); r <- rcmdcheck::rcmdcheck(".", args = c("--no-manual")); quit(save = "no", status = if (length(c(r$errors, r$warnings)) > 1 || grepl("FAILED", r$output$stdout) || !checkr::package_exports_checked(".")) { 1 } else { 0 }, runLast = FALSE)'
 after_success:
   - Rscript -e 'library(covr);codecov()'
 notifications:
