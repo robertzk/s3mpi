@@ -9,7 +9,7 @@ install:
 - "./travis-tool.sh install_r stringr"
 - "./travis-tool.sh install_r testthat"
 - "./travis-tool.sh install_github jimhester/covr robertzk/testthatsomemore avantcredit/AWS.tools"
-- "./travis-tool.sh install_github kirillseva/cacher"
+- "./travis-tool.sh install_github kirillseva/cacher jimhester/withr"
 script: "./travis-tool.sh run_tests"
 after_failure:
 - "./travis-tool.sh dump_logs"
