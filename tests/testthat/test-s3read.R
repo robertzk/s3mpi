@@ -16,6 +16,7 @@ local({
       expect_error(s3read("key", cache = NA, serialize = FALSE))
     })  
     test_that("if cache is TRUE, it does not error", {
+      browser()
       expect_equal(s3read("key", cache = TRUE, serialize = FALSE), "value")
     })
     test_that("if cache is FALSE, it does not error", {

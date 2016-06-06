@@ -97,5 +97,5 @@ add_ending_slash <- function(path) {
   last_character <- function(str) {
     substr(str, nchar(str), nchar(str))
   }
-  if (last_character(path) != "/") { path <- paste0(path, "/") }
+  if (last_character(path) != "/") { paste0(path, "/") } else { path }
 }
