@@ -15,6 +15,7 @@
 #' }
 s3exists <- function(name, path = s3path()) {
   if (is.null(name)) return(FALSE)  # https://github.com/robertzk/s3mpi/issues/22
+  path  <- add_ending_slash(path)
   s3key <- paste(path, name, sep = "")
   s3key <- gsub("/$", "", s3key) # strip terminal /
   if (!grepl("^s3://", s3key)) {

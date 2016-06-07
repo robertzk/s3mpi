@@ -1,29 +1,49 @@
 language: c
-before_install:
-- curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
-- chmod 755 ./travis-tool.sh
-- "./travis-tool.sh bootstrap"
-install:
-- "./travis-tool.sh install_github avantcredit/aws-tools"
-- "./travis-tool.sh install_deps"
-- "./travis-tool.sh install_r stringr"
-- "./travis-tool.sh install_r testthat"
-- "./travis-tool.sh install_github jimhester/covr robertzk/testthatsomemore avantcredit/AWS.tools"
-- "./travis-tool.sh install_github kirillseva/cacher"
-script: "./travis-tool.sh run_tests"
-after_failure:
-- "./travis-tool.sh dump_logs"
+sudo: false
+git:
+  submodules: false
+addons:
+  apt:
+    sources:
+      - r-packages-precise
+    packages:
+      - r-base-dev
+      - r-recommended
+      - pandoc
+env:
+  - global:
+    - WARNINGS_ARE_ERRORS=1
+    - _R_CHECK_FORCE_SUGGESTS_=0
+    - LINTR_COMMENT_BOT=false
+    - R_LIBS_USER=~/.R/library
+cache:
+  directories:
+    $R_LIBS_USER
+before_script:
+  - mkdir -p "$R_LIBS_USER"
+  - Rscript -e 'if (!require("devtools")) install.packages("devtools", repos = "http://cran.rstudio.com/")'
+  - Rscript -e 'if (!require("roxygen2")) devtools::install_github("klutometis/roxygen@v5.0.1")'
+  - Rscript -e 'if (!require("rcmdcheck")) devtools::install_github("MangoTheCat/rcmdcheck")'
+  - Rscript -e 'if (!require("aws-tools")) devtools::install_github("avantcredit/aws-tools")'
+  - Rscript -e 'if (!require("stringr")) devtools::install_github("hadley/stringr")'
+  - Rscript -e 'if (!require("testthat")) devtools::install_github("hadley/testthat")'
+  - Rscript -e 'if (!require("testthatsomemore")) devtools::install_github("robertzk/testthatsomemore")'
+  - Rscript -e 'if (!require("covr")) devtools::install_github("jimhester/covr")'
+  - Rscript -e 'if (!require("checkr") || packageVersion("checkr") < package_version("0.0.4.9007")) { devtools::install_github("peterhurford/checkr") }'
+  - Rscript -e 'devtools::install_deps(repos = "http://cran.rstudio.com", dependencies = TRUE)'
+script:
+  - Rscript -e 'try(devtools::install(".")); r <- rcmdcheck::rcmdcheck(".", args = c("--no-manual")); quit(save = "no", status = if (length(c(r$errors, r$warnings)) > 1 || grepl("FAILED", r$output$stdout)) { 1 } else { 0 }, runLast = FALSE)'
 after_success:
-  - "Rscript -e 'library(covr);coveralls()'"
+  - Rscript -e 'library(covr);codecov()'
 notifications:
   email:
     on_success: change
     on_failure: change
   hipchat:
-    rooms:
-      secure: inqJiqV/C+/gOaxInYn9RmpG0zTSAXIUq17c+C1PLeSc+1ESeaHETdV5cI7r5WTr7AHLFPSAnZ5Q31RCMiryu7xpYgOQVVQeIUL7TQ/KfKIT0cjy6MhvKHNAlYfOAGtA1NqB+X63zj3DIAfSCz3G38HtK9NydXS9ZuCI1OVi1lc=
     on_success: change
     on_failure: change
     template:
     - "%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message}
       | Details: %{build_url} | Changes: %{compare_url}"
+    rooms:
+      secure: SQirvWbQ9b0roApmf3gt6JTcWIra9NguGzR45azxVDaWw2n0w/sIufA/cxa2sTLLhKfIMNlJwwhQjNaWyHeZkTTxRb76tcHWQdPpMcNKTwfr3+C3/bXDkmQozvQkYNgGuRc2Iln5ms12fiHmwI6dp5aENACUo5fbV2SLJQvmt5w=

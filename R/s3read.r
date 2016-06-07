@@ -29,12 +29,7 @@
 s3read <- function(name, path = s3path(), cache = TRUE, serialize = TRUE, ...) {
   stopifnot(isTRUE(cache) || identical(cache, FALSE))
 
-  # All S3 paths need a slash at the end to work, but we don't need the user
-  # to know that, so let's add a slash for them if they forget.
-  last_character <- function(str) {
-    substr(str, nchar(str), nchar(str))
-  }
-  if (last_character(path) != "/") { path <- paste0(path, "/") }
+  path <- add_ending_slash(path)
 
   s3key <- paste(path, name, sep = "")
 

@@ -1,26 +1,28 @@
 context("s3read")
 library(testthatsomemore)
 
-local({
-  opts <- options(s3mpi.path = "s3://test/")
-  on.exit(options(opts), add = TRUE)
-
+withr::with_options(list(
+  s3mpi.path = "s3://test/",
+  s3mpi.cache = NULL
+), {
   describe("cache parameter validation", {
     with_mock(
       `s3mpi:::s3.get` = function(...) "value",
       `s3mpi:::s3cache` = function(...) TRUE, {
-    test_that("if cache is not TRUE or FALSE, it errors", {
-      expect_error(s3read("key", cache = "pizza", serialize = FALSE))
-      expect_error(s3read("key", cache = 23, serialize = FALSE))
-      expect_error(s3read("key", cache = iris, serialize = FALSE))
-      expect_error(s3read("key", cache = NA, serialize = FALSE))
-    })  
-    test_that("if cache is TRUE, it does not error", {
-      expect_equal(s3read("key", cache = TRUE, serialize = FALSE), "value")
-    })
-    test_that("if cache is FALSE, it does not error", {
-      expect_equal(s3read("key", cache = FALSE, serialize = FALSE), "value")
-    }) }) })
+      test_that("if cache is not TRUE or FALSE, it errors", {
+        expect_error(s3read("key", cache = "pizza", serialize = FALSE))
+        expect_error(s3read("key", cache = 23, serialize = FALSE))
+        expect_error(s3read("key", cache = iris, serialize = FALSE))
+        expect_error(s3read("key", cache = NA, serialize = FALSE))
+      })  
+      test_that("if cache is TRUE, it does not error", {
+        expect_equal(s3read("key", cache = TRUE, serialize = FALSE), "value")
+      })
+      test_that("if cache is FALSE, it does not error", {
+        expect_equal(s3read("key", cache = FALSE, serialize = FALSE), "value")
+      }) 
+    }) 
+  })
 
   test_that("if the path does not end in a slash, the slash is added", {
     map <- list2env(list("s3://path/key" = "value"))
@@ -74,3 +76,4 @@ local({
     })
   })
 })
+

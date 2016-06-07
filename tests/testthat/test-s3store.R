@@ -1,10 +1,10 @@
 context("s3store")
 library(testthatsomemore)
 
-local({
-  opts <- options(s3mpi.path = "s3://test/")
-  on.exit(options(opts), add = TRUE)
-
+withr::with_options(list(
+  s3mpi.path = "s3://test/",
+  s3mpi.cache = NULL
+), {
   test_that("it stops if safe is enabled and we overwrite", {
     testthatsomemore::package_stub("s3mpi", "s3exists", function(...) TRUE, {
       expect_error(s3store("foo", "bar", safe = TRUE), "already exists")
