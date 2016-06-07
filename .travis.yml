@@ -32,7 +32,7 @@ before_script:
   - Rscript -e 'if (!require("checkr") || packageVersion("checkr") < package_version("0.0.4.9007")) { devtools::install_github("peterhurford/checkr") }'
   - Rscript -e 'devtools::install_deps(repos = "http://cran.rstudio.com", dependencies = TRUE)'
 script:
-  - Rscript -e 'try(devtools::install(".")); r <- rcmdcheck::rcmdcheck(".", args = c("--no-manual")); quit(save = "no", status = if (length(c(r$errors, r$warnings)) > 1 || grepl("FAILED", r$output$stdout) || !checkr::package_exports_checked(".")) { 1 } else { 0 }, runLast = FALSE)'
+  - Rscript -e 'try(devtools::install(".")); r <- rcmdcheck::rcmdcheck(".", args = c("--no-manual")); quit(save = "no", status = if (length(c(r$errors, r$warnings)) > 1 || grepl("FAILED", r$output$stdout)) { 1 } else { 0 }, runLast = FALSE)'
 after_success:
   - Rscript -e 'library(covr);codecov()'
 notifications:
