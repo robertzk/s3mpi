@@ -5,7 +5,8 @@
 \alias{s3.put}
 \title{Fetch an R object from an S3 path.}
 \usage{
-s3.get(path, bucket.location = "US", verbose = FALSE, debug = FALSE)
+s3.get(path, bucket.location = "US", verbose = FALSE, debug = FALSE,
+  cache = TRUE)
 
 s3.put(x, path, name, bucket.location = "US", verbose = FALSE,
   debug = FALSE, encrypt = FALSE, check_exists = TRUE, num_retries = 0)
@@ -20,6 +21,8 @@ utility verbose flag will be set.}
 
 \item{debug}{logical. If \code{TRUE}, the \code{s3cmd}
 utility debug flag will be set.}
+
+\item{cache}{logical. If \code{TRUE}, an LRU in-memory cache will be referenced.}
 
 \item{x}{ANY. R object to store to S3.}
 

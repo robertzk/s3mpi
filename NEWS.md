@@ -1,3 +1,7 @@
+# Version 0.2.26
+
+* Turn off the LRU cache too when `cache = FALSE` in `s3read`.
+
 # Version 0.2.25
 * Automatically adds ending slashes to paths if they are missing when using
   `s3store`, `s3exists`, or `s3delete`.
