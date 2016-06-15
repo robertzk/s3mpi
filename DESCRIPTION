@@ -4,7 +4,7 @@ Title: R message passing interface using S3 storage
 URL: https://github.com/robertzk/s3mpi
 BugReports: https://github.com/robertzk/s3mpi/issues
 Description: Easily pass objects like lists or dataframes between consoles.
-Version: 0.2.25
+Version: 0.2.26
 Author: Robert Krzyzanowski <technoguyrob@gmail.com>
 Maintainer: Robert Krzyzanowski <technoguyrob@gmail.com>
 Authors@R: c(person("Robert", "Krzyzanowski", email = "technoguyrob@gmail.com",
