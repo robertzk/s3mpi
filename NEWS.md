@@ -1,3 +1,7 @@
+# Version 0.2.26
+
+* `options(s3mpi.num_retries)` now allows you to specify default number of retries globally.
+
 # Version 0.2.25
 * Automatically adds ending slashes to paths if they are missing when using
   `s3store`, `s3exists`, or `s3delete`.
