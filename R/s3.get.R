@@ -58,9 +58,13 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
     # Check time on s3LRUcache's copy
     last_cached <- s3LRUcache()$last_accessed(path) # assumes a POSIXct object
 
-    # Check time on s3 remote's copy
+    # Check time on s3 remote's copy using the `s3cmd info` command.
     s3.cmd <- paste("info ", path, "| head -n 3 | tail -n 1")
     result <- system2(s3cmd(), s3.cmd, stdout = TRUE)
+    # The `s3cmd info` command produces the output
+    # "    Last mod:  Tue, 16 Jun 2015 19:36:10 GMT"
+    # in its third line, so we subset to the 20-39 index range
+    # to extract "16 Jun 2015 19:36:10".
     result <- substring(result, 20, 39)
     last_updated <- strptime(result, format = "%d %b %Y %H:%m:%S", tz = "GMT")
 
