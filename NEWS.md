@@ -1,3 +1,8 @@
+# Version 0.2.27
+
+* Revert the change in 0.2.21 in favor of using `s3cmd info` over
+  `s3cmd ls` to obtain updated_at information on files.
+
 # Version 0.2.26
 
 * `options(s3mpi.num_retries)` now allows you to specify default number of retries globally.

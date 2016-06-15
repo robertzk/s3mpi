@@ -59,11 +59,12 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
     last_cached <- s3LRUcache()$last_accessed(path) # assumes a POSIXct object
 
     # Check time on s3 remote's copy
-    s3.cmd <- paste("ls ", path, "| head -n 1 | awk '{print $1\" \"$2}' ")
-    last_updated <- as.POSIXct(system2(s3cmd(), s3.cmd, stdout = TRUE), tz = "GMT")
+    s3.cmd <- paste("info ", path, "| head -n 3 | tail -n 1")
+    result <- system2(s3cmd(), s3.cmd, stdout = TRUE)
+    result <- substring(result, 20, 39)
+    last_updated <- strptime(result, format = "%d %b %Y %H:%m:%S", tz = "GMT")
 
-    # Update the cache if remote is newer by at least a minute.
-    if (in_earlier_minute(last_cached, last_updated)) {
+    if (last_updated > last_cached) {
       ans <- fetch()
       s3LRUcache()$set(path, ans)
     } else {
