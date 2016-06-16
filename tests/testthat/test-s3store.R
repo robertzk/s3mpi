@@ -76,6 +76,18 @@ withr::with_options(list(
       expect_error(s3store("value", "key"), NA)
     })})})
   })
+
+  calling_intervals <- NULL
+  test_that("it can retry with the correct timing when an s3exists returns FALSE", {
+    map <- list2env(list("s3://test/key" = NULL))
+    testthatsomemore::package_stub("base", "Sys.sleep",  function(...) calling_intervals <<- c(calling_intervals, ..1), {
+    testthatsomemore::package_stub("base", "system2",  function(...) TRUE, {
+    testthatsomemore::package_stub("s3mpi", "s3exists",  function(...) FALSE, {
+    testthatsomemore::package_stub("s3mpi", "s3.put", function(...) run_system_put(..2, ..3, "", TRUE, 3, c(1, 2, 100)), {
+      expect_error(s3store("value", "key"))
+      expect_identical(calling_intervals, c(1, 2, 100))
+    })})})})
+  })
 })
 
 
