@@ -7,7 +7,7 @@
 #' @rdname s3.get
 s3.put <- function (x, path, name, bucket.location = "US", verbose = FALSE,
                     debug = FALSE, encrypt = FALSE, check_exists = TRUE,
-                    num_retries = getOption("s3mpi.num_retries", 0)) {
+                    num_retries = getOption("s3mpi.num_retries", 0), backoff = c(2,8,32,64,128)) {
   s3key <- paste(path, name, sep = "")
   ## This inappropriately-named function actually checks existence
   ## of an entire *s3key*, not a bucket.
@@ -27,13 +27,16 @@ s3.put <- function (x, path, name, bucket.location = "US", verbose = FALSE,
       ifelse(verbose, "--verbose --progress", "--no-progress"), ifelse(debug,
           "--debug", ""), '--check-md5')
 
-  run_system_put(path, name, s3.cmd, check_exists, num_retries)
+  ## Ensure backoff vector has correct number of elements and is capped
+  backoff <- backoff[vapply(1:num_retries, function(i) min(i, length(backoff)), numeric(1))]
+  run_system_put(path, name, s3.cmd, check_exists, num_retries, backoff)
 }
 
 run_system_put <- function(path, name, s3.cmd, check_exists, num_retries) {
   ret <- system2(s3cmd(), s3.cmd, stdout = TRUE)
   if (isTRUE(check_exists) && !s3exists(name, path)) {
     if (num_retries > 0) {
+      Sys.sleep(backoff[length(backoff) - num_retries + 1])
       do.call(Recall, `$<-`(as.list(match.call()[-1]), "num_retries", num_retries - 1))
     } else {
       stop("Object could not be successfully stored.")
