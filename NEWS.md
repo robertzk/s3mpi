@@ -1,5 +1,9 @@
 # Version 0.2.26
 
+* Add exponential backoff logic to s3.put function.
+
+# Version 0.2.26
+
 * `options(s3mpi.num_retries)` now allows you to specify default number of retries globally.
 
 # Version 0.2.25
