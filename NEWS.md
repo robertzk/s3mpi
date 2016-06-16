@@ -1,4 +1,4 @@
-# Version 0.2.26
+# Version 0.2.27
 
 * Add exponential backoff logic to s3.put function.
 
