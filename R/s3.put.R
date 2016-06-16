@@ -28,9 +28,7 @@ s3.put <- function (x, path, name, bucket.location = "US", verbose = FALSE,
           "--debug", ""), '--check-md5')
 
   ## Ensure backoff vector has correct number of elements and is capped
-  if (num_retries > 0) {
-    backoff <- backoff[vapply(1:num_retries, function(i) min(i, length(backoff)), integer(1))]
-  }
+  backoff <- backoff[vapply(seq_len(num_retries), function(i) min(i, length(backoff)), integer(1))]
   run_system_put(path, name, s3.cmd, check_exists, num_retries, backoff)
 }
 
