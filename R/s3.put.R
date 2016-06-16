@@ -32,7 +32,7 @@ s3.put <- function (x, path, name, bucket.location = "US", verbose = FALSE,
   run_system_put(path, name, s3.cmd, check_exists, num_retries, backoff)
 }
 
-run_system_put <- function(path, name, s3.cmd, check_exists, num_retries) {
+run_system_put <- function(path, name, s3.cmd, check_exists, num_retries, backoff) {
   ret <- system2(s3cmd(), s3.cmd, stdout = TRUE)
   if (isTRUE(check_exists) && !s3exists(name, path)) {
     if (num_retries > 0) {
