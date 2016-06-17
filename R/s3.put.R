@@ -7,7 +7,7 @@
 #' @rdname s3.get
 s3.put <- function (x, path, name, bucket.location = "US", verbose = FALSE,
                     debug = FALSE, encrypt = FALSE, check_exists = TRUE,
-                    num_retries = 0) {
+                    num_retries = getOption("s3mpi.num_retries", 0)) {
   s3key <- paste(path, name, sep = "")
   ## This inappropriately-named function actually checks existence
   ## of an entire *s3key*, not a bucket.
