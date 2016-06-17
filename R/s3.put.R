@@ -2,8 +2,13 @@
 #'    object prior to upload it to S3.
 #' @param x ANY. R object to store to S3.
 #' @param name character.
+#' @param check_exists logical. Whether or not to check if an object already exists at the specificed location.
 #' @param num_retries numeric. the number of times to retry uploading.
-#' @param check_exists logical. Wheter or not to check if an object already exists at the specificed location.
+#' @param backoff numeric. Vector, with each element in seconds, describing the
+#'   exponential backoff to be used in conjunction with the num_retries argument.
+#'   Number of elements must equal num_retries. Defaults to 4, 8, 16, 32, etc.
+#' @param max_backoff numeric. Number describing the maximum seconds s3mpi will sleep
+#'   prior to retrying an upload. Defaults to 128 seconds.
 #' @rdname s3.get
 s3.put <- function (x, path, name, bucket.location = "US", verbose = FALSE,
                     debug = FALSE, encrypt = FALSE, check_exists = TRUE,
@@ -19,7 +24,7 @@ s3.put <- function (x, path, name, bucket.location = "US", verbose = FALSE,
     if (length(backoff) != num_retries) {
       stop("Your backoff vector length must match the number of retries.")
     }
-    backoff <- vapply(backoff, function(b) min(b, max_backoff), numeric(1))
+    backoff <- pmin(backoff, max_backoff)
   }
 
   ## We create a temporary file, *write* the R object to the file, and then
