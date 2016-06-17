@@ -1,3 +1,7 @@
+# Version 0.2.28
+
+* Add exponential backoff logic to s3.put function.
+
 # Version 0.2.27
 * Turn off the LRU cache too when `cache = FALSE` in `s3read`.
 
