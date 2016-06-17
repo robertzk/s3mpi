@@ -1,9 +1,11 @@
-# Version 0.2.27
+# Version 0.2.28
 
 * Add exponential backoff logic to s3.put function.
 
-# Version 0.2.26
+# Version 0.2.27
+* Turn off the LRU cache too when `cache = FALSE` in `s3read`.
 
+# Version 0.2.26
 * `options(s3mpi.num_retries)` now allows you to specify default number of retries globally.
 
 # Version 0.2.25
