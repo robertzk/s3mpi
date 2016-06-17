@@ -9,7 +9,9 @@ s3.get(path, bucket.location = "US", verbose = FALSE, debug = FALSE,
   cache = TRUE)
 
 s3.put(x, path, name, bucket.location = "US", verbose = FALSE,
-  debug = FALSE, encrypt = FALSE, check_exists = TRUE, num_retries = 0)
+  debug = FALSE, encrypt = FALSE, check_exists = TRUE,
+  num_retries = getOption("s3mpi.num_retries", 0), backoff = 2^seq(2,
+  num_retries + 1), max_backoff = 128)
 }
 \arguments{
 \item{path}{character. A full S3 path.}
@@ -31,9 +33,16 @@ utility debug flag will be set.}
 \item{encrypt}{logical. Whether or not to encrypt the serialized R
 object prior to upload it to S3.}
 
-\item{check_exists}{logical. Wheter or not to check if an object already exists at the specificed location.}
+\item{check_exists}{logical. Whether or not to check if an object already exists at the specificed location.}
 
 \item{num_retries}{numeric. the number of times to retry uploading.}
+
+\item{backoff}{numeric. Vector, with each element in seconds, describing the
+exponential backoff to be used in conjunction with the num_retries argument.
+Number of elements must equal num_retries. Defaults to 4, 8, 16, 32, etc.}
+
+\item{max_backoff}{numeric. Number describing the maximum seconds s3mpi will sleep
+prior to retrying an upload. Defaults to 128 seconds.}
 }
 \value{
 For \code{s3.get}, the R object stored in RDS format on S3 in the \code{path}.

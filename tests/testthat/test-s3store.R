@@ -81,7 +81,7 @@ withr::with_options(list(
     testthatsomemore::package_stub("base", "system2",  function(...) TRUE, {
     testthatsomemore::package_stub("s3mpi", "s3exists",  function(...) FALSE, {
     testthatsomemore::package_stub("s3mpi", "s3.put", function(...) run_system_put(..2, ..3, "", TRUE, 3, c(1, 2, 100)), {
-      try(run_system_put(..2, ..3, "", TRUE, 3, c(1, 2, 100)), silent = T)
+      try(run_system_put(,, "", TRUE, 3, c(1, 2, 100)), silent = TRUE)
       expect_identical(calling_intervals, c(1, 2, 100))
     })})})})
   })
