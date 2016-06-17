@@ -7,11 +7,20 @@
 #' @rdname s3.get
 s3.put <- function (x, path, name, bucket.location = "US", verbose = FALSE,
                     debug = FALSE, encrypt = FALSE, check_exists = TRUE,
-                    num_retries = getOption("s3mpi.num_retries", 0), backoff = c(2,8,32,64,128)) {
+                    num_retries = getOption("s3mpi.num_retries", 0), backoff = 2 ^ seq(2, num_retries + 1),
+                    max_backoff = 128) {
   s3key <- paste(path, name, sep = "")
   ## This inappropriately-named function actually checks existence
   ## of an entire *s3key*, not a bucket.
   AWS.tools:::check.bucket(s3key)
+
+  ## Ensure backoff vector has correct number of elements and is capped
+  if (num_retries > 0) {
+    if (length(backoff) != num_retries) {
+      stop("Your backoff vector length must match the number of retries.")
+    }
+    backoff <- vapply(backoff, function(b) min(b, max_backoff), numeric(1))
+  }
 
   ## We create a temporary file, *write* the R object to the file, and then
   ## upload that file to S3. This magic works thanks to R's fantastic
@@ -27,8 +36,6 @@ s3.put <- function (x, path, name, bucket.location = "US", verbose = FALSE,
       ifelse(verbose, "--verbose --progress", "--no-progress"), ifelse(debug,
           "--debug", ""), '--check-md5')
 
-  ## Ensure backoff vector has correct number of elements and is capped
-  backoff <- backoff[vapply(seq_len(num_retries), function(i) min(i, length(backoff)), integer(1))]
   run_system_put(path, name, s3.cmd, check_exists, num_retries, backoff)
 }
 
