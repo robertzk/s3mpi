@@ -1,3 +1,8 @@
+# Version 0.2.29
+
+* Revert the change in 0.2.21 in favor of using `s3cmd info` over
+  `s3cmd ls` to obtain updated_at information on files.
+
 # Version 0.2.28
 
 * Add exponential backoff logic to s3.put function.
