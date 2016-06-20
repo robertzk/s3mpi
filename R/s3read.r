@@ -34,9 +34,9 @@ s3read <- function(name, path = s3path(), cache = TRUE, serialize = TRUE, ...) {
   s3key <- paste(path, name, sep = "")
 
   if (!isTRUE(cache) || is.null(getOption("s3mpi.cache"))) {
-    value <- s3.get(s3key, ...)
+    value <- s3.get(s3key, cache = FALSE, ...)
   } else if (is.not_cached(value <- s3cache(s3key))) {
-    value <- s3.get(s3key, ...)
+    value <- s3.get(s3key, cache = TRUE, ...)
     ## If the file system caching layer is enabled, store it to the file system
     ## before returning the value.
     s3cache(s3key, value)

@@ -1,10 +1,16 @@
-# Version 0.2.27
+# Version 0.2.29
 
 * Revert the change in 0.2.21 in favor of using `s3cmd info` over
   `s3cmd ls` to obtain updated_at information on files.
 
-# Version 0.2.26
+# Version 0.2.28
 
+* Add exponential backoff logic to s3.put function.
+
+# Version 0.2.27
+* Turn off the LRU cache too when `cache = FALSE` in `s3read`.
+
+# Version 0.2.26
 * `options(s3mpi.num_retries)` now allows you to specify default number of retries globally.
 
 # Version 0.2.25

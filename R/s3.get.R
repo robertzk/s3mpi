@@ -6,11 +6,12 @@
 #'    utility verbose flag will be set.
 #' @param debug logical. If \code{TRUE}, the \code{s3cmd}
 #'    utility debug flag will be set.
+#' @param cache logical. If \code{TRUE}, an LRU in-memory cache will be referenced.
 #' @aliases s3.put
 #' @return For \code{s3.get}, the R object stored in RDS format on S3 in the \code{path}.
 #'    For \code{s3.put}, the system exit code from running the \code{s3cmd}
 #'    command line tool to perform the upload.
-s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE) {
+s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE, cache = TRUE) {
   ## This inappropriately-named function actually checks existence
   ## of a *path*, not a bucket.
   AWS.tools:::check.bucket(path)
@@ -39,7 +40,7 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
   ## Check for the path in the cache
   ## If it does not exist, create and return its entry.
   ## The `s3LRUcache` helper is defined in utils.R
-  if (is.windows() || isTRUE(getOption("s3mpi.disable_lru_cache"))) {
+  if (is.windows() || isTRUE(getOption("s3mpi.disable_lru_cache")) || !isTRUE(cache)) {
     ## We do not have awk, which we will need for the moment to
     ## extract the modified time of the S3 object.
     ans <- fetch()
