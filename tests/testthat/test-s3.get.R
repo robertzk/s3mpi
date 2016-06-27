@@ -2,10 +2,16 @@ context("s3.get")
 library(testthatsomemore)
 
 test_that("it ignores bucket location flag if using s4cmd", {
-  expect_equal(bucket_location_to_flag("/usr/bin/s3cmd", "US"), "--bucket-location US");
-  expect_equal(bucket_location_to_flag("/usr/bin/s3cmd", "UK"), "--bucket-location UK");
-  expect_equal(bucket_location_to_flag("/usr/bin/s4cmd", "US"), "");
-  expect_equal(bucket_location_to_flag("/usr/bin/s4cmd", "UK"), "");
+  with_mock(s3cmd = function() "/usr/bin/s3cmd", {
+    expect_equal(bucket_location_to_flag("US"), "--bucket-location US")
+    expect_equal(bucket_location_to_flag("UK"), "--bucket-location UK")
+  })
+
+  with_mock(s3cmd = function() "/usr/bin/s4cmd", {
+    expect_equal(bucket_location_to_flag("US"), "")
+    expect_warning(bucket_location_to_flag("UK"), "Ignoring non-default bucket location")
+    expect_equal(suppressWarnings(bucket_location_to_flag("UK")), "")
+  })
 })
 
 #testthatsomemore::package_stub("AWS.tools", "check.bucket", function(...) { },  {

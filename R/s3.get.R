@@ -29,11 +29,9 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
 
     ## Run the s3cmd tool to fetch the file from S3.
     s3.cmd <- paste("get", paste0('"', path, '"'), x.serialized,
-                    bucket_location_to_flag(s3cmd(), bucket.location),
-                    ifelse(verbose,
-                           "--verbose --progress",
-                           "--no-progress"),
-                    ifelse(debug, "--debug", ""))
+                    bucket_location_to_flag(bucket.location),
+                    if (verbose) "--verbose --progress" else "--no-progress",
+                    if (debug) "--debug" else "")
     system2(s3cmd(), s3.cmd)
 
     ## And then read it back in RDS format.
@@ -86,15 +84,17 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
 ## argument for s3cmd.  If it looks like the s3cmd is actually
 ## pointing to an s4cmd, return empty string as s4cmd doesn't
 ## support bucket location.
-bucket_location_to_flag <- function(s3cmd_binary_path, bucket_location) {
-  if (grepl("s4cmd", s3cmd_binary_path)) {
-    if (bucket_location != "US") {
+bucket_location_to_flag <- function(bucket_location) {
+  if (using_s4cmd()) {
+    if (!identical(bucket_location, "US")) {
         warning(paste0("Ignoring non-default bucket location ('",
                        bucket_location,
                        "') in s3mpi::s3.get since s4cmd was detected",
                        "-- this might be a little slower but is safe to ignore."));
     }
-    return("")
+    ""
+  } else {
+    paste("--bucket-location", bucket_location)
   }
-  return(paste("--bucket_location", bucket_location))
 }
+
