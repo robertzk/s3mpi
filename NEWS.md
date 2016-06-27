@@ -1,3 +1,7 @@
+# Version 0.2.30
+
+* Don't set --bucket-location flag if `s4cmd` is detected as the `s3cmd` binary.
+
 # Version 0.2.29
 
 * Revert the change in 0.2.21 in favor of using `s3cmd info` over
