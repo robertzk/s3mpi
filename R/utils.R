@@ -87,3 +87,8 @@ add_ending_slash <- function(path) {
   }
   if (last_character(path) != "/") { paste0(path, "/") } else { path }
 }
+
+using_s4cmd <- function() {
+  grepl("s4cmd", s3cmd())
+}
+
