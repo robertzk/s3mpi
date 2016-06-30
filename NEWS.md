@@ -1,3 +1,7 @@
+# Version 0.2.31
+
+* Make `s3store` work with s4cmd.
+
 # Version 0.2.30
 
 * Don't set --bucket-location flag if `s4cmd` is detected as the `s3cmd` binary.
@@ -58,7 +62,7 @@
 # Version 0.2.17
 
 * Explicitly create the directory of a file given by `tempfile()` to prevent
-  rare errors wherein the directory does not exist and yields a 
+  rare errors wherein the directory does not exist and yields a
   file connection error. ([#41](https://github.com/robertzk/s3mpi/issues/41))
 
 # Version 0.2.16

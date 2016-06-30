@@ -15,7 +15,7 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
   ## This inappropriately-named function actually checks existence
   ## of a *path*, not a bucket.
   AWS.tools:::check.bucket(path)
-  
+
   # Helper function for fetching data from s3
   fetch <- function() {
     x.serialized <- tempfile()
@@ -79,22 +79,3 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
   }
   ans
 }
-
-## Given an s3cmd path and a bucket location, will construct a flag
-## argument for s3cmd.  If it looks like the s3cmd is actually
-## pointing to an s4cmd, return empty string as s4cmd doesn't
-## support bucket location.
-bucket_location_to_flag <- function(bucket_location) {
-  if (using_s4cmd()) {
-    if (!identical(bucket_location, "US")) {
-        warning(paste0("Ignoring non-default bucket location ('",
-                       bucket_location,
-                       "') in s3mpi::s3.get since s4cmd was detected",
-                       "-- this might be a little slower but is safe to ignore."));
-    }
-    ""
-  } else {
-    paste("--bucket-location", bucket_location)
-  }
-}
-
