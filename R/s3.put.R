@@ -1,5 +1,3 @@
-#' @param encrypt logical. Whether or not to encrypt the serialized R
-#'    object prior to upload it to S3.
 #' @param x ANY. R object to store to S3.
 #' @param name character.
 #' @param check_exists logical. Whether or not to check if an object already exists at the specificed location.
@@ -10,8 +8,8 @@
 #' @param max_backoff numeric. Number describing the maximum seconds s3mpi will sleep
 #'   prior to retrying an upload. Defaults to 128 seconds.
 #' @rdname s3.get
-s3.put <- function (x, path, name, bucket.location = "US", verbose = FALSE,
-                    debug = FALSE, encrypt = FALSE, check_exists = TRUE,
+s3.put <- function (x, path, name, bucket.location = "US",
+                    debug = FALSE, check_exists = TRUE,
                     num_retries = getOption("s3mpi.num_retries", 0), backoff = 2 ^ seq(2, num_retries + 1),
                     max_backoff = 128) {
   s3key <- paste(path, name, sep = "")
@@ -36,10 +34,9 @@ s3.put <- function (x, path, name, bucket.location = "US", verbose = FALSE,
   on.exit(unlink(x.serialized, force = TRUE), add = TRUE)
   saveRDS(x, x.serialized)
 
-  s3.cmd <- paste("put", x.serialized, paste0('"', s3key, '"'), ifelse(encrypt,
-      "--encrypt", ""), paste("--bucket-location", bucket.location),
-      ifelse(verbose, "--verbose --progress", "--no-progress"), ifelse(debug,
-          "--debug", ""), '--check-md5')
+  s3.cmd <- paste("put", x.serialized, paste0('"', s3key, '"'),
+            bucket_location_to_flag(bucket.location),
+            ifelse(debug, "--debug", ""), "--force")
 
   run_system_put(path, name, s3.cmd, check_exists, num_retries, backoff)
 }
