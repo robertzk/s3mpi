@@ -8,10 +8,9 @@
 s3.get(path, bucket.location = "US", verbose = FALSE, debug = FALSE,
   cache = TRUE)
 
-s3.put(x, path, name, bucket.location = "US", verbose = FALSE,
-  debug = FALSE, encrypt = FALSE, check_exists = TRUE,
-  num_retries = getOption("s3mpi.num_retries", 0), backoff = 2^seq(2,
-  num_retries + 1), max_backoff = 128)
+s3.put(x, path, name, bucket.location = "US", debug = FALSE,
+  check_exists = TRUE, num_retries = getOption("s3mpi.num_retries", 0),
+  backoff = 2^seq(2, num_retries + 1), max_backoff = 128)
 }
 \arguments{
 \item{path}{character. A full S3 path.}
@@ -29,9 +28,6 @@ utility debug flag will be set.}
 \item{x}{ANY. R object to store to S3.}
 
 \item{name}{character.}
-
-\item{encrypt}{logical. Whether or not to encrypt the serialized R
-object prior to upload it to S3.}
 
 \item{check_exists}{logical. Whether or not to check if an object already exists at the specificed location.}
 
