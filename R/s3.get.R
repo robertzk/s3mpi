@@ -30,8 +30,10 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
     ## Run the s3cmd tool to fetch the file from S3.
     s3.cmd <- paste("get", paste0('"', path, '"'), x.serialized,
                     bucket_location_to_flag(bucket.location),
-                    if (verbose) "--verbose --progress" else "--no-progress",
-                    if (debug) "--debug" else "")
+                    if (using_s4cmd()) {
+                      paste(if (verbose) "--verbose --progress" else "--no-progress",
+                      if (debug) "--debug" else "")
+                    } else { "" })
     system2(s3cmd(), s3.cmd)
 
     ## And then read it back in RDS format.
