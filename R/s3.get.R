@@ -11,13 +11,18 @@
 #' @return For \code{s3.get}, the R object stored in RDS format on S3 in the \code{path}.
 #'    For \code{s3.put}, the system exit code from running the \code{s3cmd}
 #'    command line tool to perform the upload.
-s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE, cache = TRUE) {
+s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE, cache = TRUE, storage_format = "RDS", ...) {
+
+  if (!(storage_format %in% c("RDS", "CSV"))) {
+    stop("The only storage formats supported at the moment are RDS and (for data frames) CSV.")
+  }
+
   ## This inappropriately-named function actually checks existence
   ## of a *path*, not a bucket.
   AWS.tools:::check.bucket(path)
 
   # Helper function for fetching data from s3
-  fetch <- function() {
+  fetch <- function(path, storage_format, bucket.location, ...) {
     x.serialized <- tempfile()
     dir.create(dirname(x.serialized), showWarnings = FALSE, recursive = TRUE)
     ## We remove the file [when we exit the function](https://stat.ethz.ch/R-manual/R-patched/library/base/html/on.exit.html).
@@ -35,7 +40,8 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
     system2(s3cmd(), s3.cmd)
 
     ## And then read it back in RDS format.
-    readRDS(x.serialized)
+    load_from_file <- get(paste0("load_as_", storage_format), envir = as.environment("package:s3mpi"))
+    load_from_file(x.serialized, ...)
   }
 
   ## Check for the path in the cache
@@ -44,9 +50,9 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
   if (is.windows() || isTRUE(getOption("s3mpi.disable_lru_cache")) || !isTRUE(cache)) {
     ## We do not have awk, which we will need for the moment to
     ## extract the modified time of the S3 object.
-    ans <- fetch()
+    ans <- fetch(path, storage_format, bucket_location, ...)
   } else if (!s3LRUcache()$exists(path)) {
-    ans <- fetch()
+    ans <- fetch(path, storage_format, bucket_location, ...)
     ## We store the value of the R object in a *least recently used cache*,
     ## expecting the user to not think about optimizing their code and
     ## call `s3read` with the same key multiple times in one session. With
@@ -71,11 +77,19 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
     last_updated <- strptime(result, format = "%d %b %Y %H:%m:%S", tz = "GMT")
 
     if (last_updated > last_cached) {
-      ans <- fetch()
+      ans <- fetch(path, storage_format, bucket_location, ...)
       s3LRUcache()$set(path, ans)
     } else {
       ans <- s3LRUcache()$get(path)
     }
   }
   ans
+}
+
+load_as_RDS <- function(filename, ...) {
+  readRDS(filename, ...)
+}
+
+load_as_CSV <- function(filename, ...) {
+  read.csv(filename, ...)
 }

@@ -11,7 +11,16 @@
 s3.put <- function (x, path, name, bucket.location = "US",
                     debug = FALSE, check_exists = TRUE,
                     num_retries = getOption("s3mpi.num_retries", 0), backoff = 2 ^ seq(2, num_retries + 1),
-                    max_backoff = 128) {
+                    max_backoff = 128, storage_format = "RDS", ...) {
+
+  if (!(storage_format %in% c("RDS", "CSV"))) {
+    stop("The only storage formats supported at the moment are RDS and (for data frames) CSV.")
+  }
+
+  if (identical(storage_format, "CSV") && !is(x, "data.frame")) {
+    stop("You can't store an object as a CSV if it isn't a data.frame.")
+  }
+
   s3key <- paste(path, name, sep = "")
   ## This inappropriately-named function actually checks existence
   ## of an entire *s3key*, not a bucket.
@@ -32,7 +41,8 @@ s3.put <- function (x, path, name, bucket.location = "US",
   x.serialized <- tempfile();
   dir.create(dirname(x.serialized), showWarnings = FALSE, recursive = TRUE)
   on.exit(unlink(x.serialized, force = TRUE), add = TRUE)
-  saveRDS(x, x.serialized)
+  save_to_file <- get(paste0("save_as_", storage_format), envir = as.environment("package:s3mpi"))
+  save_to_file(x, x.serialized, ...)
 
   s3.cmd <- paste("put", x.serialized, paste0('"', s3key, '"'),
             bucket_location_to_flag(bucket.location),
@@ -53,4 +63,13 @@ run_system_put <- function(path, name, s3.cmd, check_exists, num_retries, backof
   } else {
     ret
   }
+}
+
+save_as_RDS <- function(x, filename, ...) {
+  saveRDS(x, filename, ...)
+}
+
+
+save_as_CSV <- function(x, filename, ...) {
+  write.csv(x, filename, ...)
 }
