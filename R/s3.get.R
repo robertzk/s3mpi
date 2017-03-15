@@ -29,7 +29,12 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
 
     ## Run the s3cmd tool to fetch the file from S3.
     cmd <- s3cmd_get_command(path, x.serialized, bucket_location_to_flag(bucket.location), verbose, debug)
-    system2(s3cmd(), cmd)
+    status <- system2(s3cmd(), cmd)
+
+    if (!use_legacy_api() && as.logical(status)) {
+      warning("Nothing exists for key ", key, " in bucket ", bucket)
+      `attr<-`(`class<-`(data.frame(), c("s3mpi_error", class(ans))), "key", bucket)
+    }
 
     ## And then read it back in RDS format.
     readRDS(x.serialized)
