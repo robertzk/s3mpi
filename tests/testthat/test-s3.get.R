@@ -2,6 +2,8 @@ context("s3.get")
 library(testthatsomemore)
 
 test_that("it ignores bucket location flag if using s4cmd", {
+  opts <- options(s3mpi.legacy_api = TRUE)
+  on.exit(options(opts), add = TRUE)
   with_mock(s3cmd = function() "/usr/bin/s3cmd", {
     expect_equal(bucket_location_to_flag("US"), "--bucket-location US")
     expect_equal(bucket_location_to_flag("UK"), "--bucket-location UK")
