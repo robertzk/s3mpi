@@ -20,4 +20,3 @@ around S3 fetching. The user should specify the configuration option
 \code{options(s3mpi.cache = "some/dir")}. The recommended cache
 directory (where files will be stored) is \code{"~/.s3cache"}.
 }
-

@@ -28,11 +28,8 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
     }
 
     ## Run the s3cmd tool to fetch the file from S3.
-    s3.cmd <- paste("get", paste0('"', path, '"'), x.serialized,
-                    bucket_location_to_flag(bucket.location),
-                    if (verbose) "--verbose --progress" else "--no-progress",
-                    if (debug) "--debug" else "")
-    system2(s3cmd(), s3.cmd)
+    cmd <- s3cmd_get_command(path, x.serialized, bucket_location_to_flag(bucket.location), verbose, debug)
+    system2(s3cmd(), cmd)
 
     ## And then read it back in RDS format.
     readRDS(x.serialized)
@@ -79,3 +76,15 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
   }
   ans
 }
+
+s3cmd_get_command <- function(path, file, bucket_flag, verbose, debug) {
+  if (use_legacy_api()) {
+    paste("get", paste0('"', path, '"'), x.serialized,
+          bucket_location_to_flag(bucket.location),
+          if (verbose) "--verbose --progress" else "--no-progress",
+          if (debug) "--debug" else "")
+  } else {
+    paste0("s3 cp ", bucket, " ", x.serialized)
+  }
+}
+
