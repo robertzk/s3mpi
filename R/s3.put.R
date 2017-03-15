@@ -34,11 +34,9 @@ s3.put <- function (x, path, name, bucket.location = "US",
   on.exit(unlink(x.serialized, force = TRUE), add = TRUE)
   saveRDS(x, x.serialized)
 
-  s3.cmd <- paste("put", x.serialized, paste0('"', s3key, '"'),
-            bucket_location_to_flag(bucket.location),
-            ifelse(debug, "--debug", ""), "--force")
+  cmd <- s3cmd_put_command(s3key, x.serialized, bucket_location_to_flag(bucket.location), debug)
 
-  run_system_put(path, name, s3.cmd, check_exists, num_retries, backoff)
+  run_system_put(path, name, cmd, check_exists, num_retries, backoff)
 }
 
 run_system_put <- function(path, name, s3.cmd, check_exists, num_retries, backoff) {
@@ -54,3 +52,15 @@ run_system_put <- function(path, name, s3.cmd, check_exists, num_retries, backof
     ret
   }
 }
+
+s3cmd_put_command <- function(s3key, file, bucket_flag, debug) {
+  if (use_legacy_api()) {
+    paste("put", x.serialized, paste0('"', s3key, '"'),
+          bucket_location_to_flag(bucket.location),
+          ifelse(debug, "--debug", ""), "--force")
+  } else {
+    paste0("s3 cp ", file, " ", s3key)
+  }
+}
+
+
