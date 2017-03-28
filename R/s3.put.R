@@ -12,8 +12,7 @@ s3.put <- function (x, path, name, bucket.location = "US",
                     debug = FALSE, check_exists = TRUE,
                     num_retries = getOption("s3mpi.num_retries", 0), backoff = 2 ^ seq(2, num_retries + 1),
                     max_backoff = 128, storage_format = c("RDS", "CSV", "table"), ...) {
-
-  storage_format <- match.arg()
+  storage_format <- match.arg(storage_format)
 
   if (is.data.frame(x) && storage_format %in% c("CSV, table")) {
     stop("You can't store an object in ", storage_format," format if it isn't a data.frame.")

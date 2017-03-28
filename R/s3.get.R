@@ -12,7 +12,7 @@
 #'    For \code{s3.put}, the system exit code from running the \code{s3cmd}
 #'    command line tool to perform the upload.
 s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE, cache = TRUE, storage_format = c("RDS", "CSV", "table"), ...) {
-  storage_format <- match.arg()
+  storage_format <- match.arg(storage_format)
 
   ## This inappropriately-named function actually checks existence
   ## of a *path*, not a bucket.
