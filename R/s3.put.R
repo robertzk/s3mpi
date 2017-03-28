@@ -11,14 +11,12 @@
 s3.put <- function (x, path, name, bucket.location = "US",
                     debug = FALSE, check_exists = TRUE,
                     num_retries = getOption("s3mpi.num_retries", 0), backoff = 2 ^ seq(2, num_retries + 1),
-                    max_backoff = 128, storage_format = "RDS", ...) {
+                    max_backoff = 128, storage_format = c("RDS", "CSV", "table"), ...) {
 
-  if (!(storage_format %in% c("RDS", "CSV"))) {
-    stop("The only storage formats supported at the moment are RDS and (for data frames) CSV.")
-  }
+  storage_format <- match.arg()
 
-  if (identical(storage_format, "CSV") && !is(x, "data.frame")) {
-    stop("You can't store an object as a CSV if it isn't a data.frame.")
+  if (is.data.frame(x) && storage_format %in% c("CSV, table")) {
+    stop("You can't store an object in ", storage_format," format if it isn't a data.frame.")
   }
 
   s3key <- paste(path, name, sep = "")
@@ -41,7 +39,7 @@ s3.put <- function (x, path, name, bucket.location = "US",
   x.serialized <- tempfile();
   dir.create(dirname(x.serialized), showWarnings = FALSE, recursive = TRUE)
   on.exit(unlink(x.serialized, force = TRUE), add = TRUE)
-  save_to_file <- get(paste0("save_as_", storage_format), envir = as.environment("package:s3mpi"))
+  save_to_file <- get(paste0("save_as_", storage_format))
   save_to_file(x, x.serialized, ...)
 
   s3.cmd <- paste("put", x.serialized, paste0('"', s3key, '"'),
@@ -72,4 +70,8 @@ save_as_RDS <- function(x, filename, ...) {
 
 save_as_CSV <- function(x, filename, ...) {
   write.csv(x, filename, ...)
+}
+
+save_as_table <- function(x, filename, ...) {
+  write.table(x, filename, ...)
 }

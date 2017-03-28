@@ -11,11 +11,8 @@
 #' @return For \code{s3.get}, the R object stored in RDS format on S3 in the \code{path}.
 #'    For \code{s3.put}, the system exit code from running the \code{s3cmd}
 #'    command line tool to perform the upload.
-s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE, cache = TRUE, storage_format = "RDS", ...) {
-
-  if (!(storage_format %in% c("RDS", "CSV"))) {
-    stop("The only storage formats supported at the moment are RDS and (for data frames) CSV.")
-  }
+s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE, cache = TRUE, storage_format = c("RDS", "CSV", "table"), ...) {
+  storage_format <- match.arg()
 
   ## This inappropriately-named function actually checks existence
   ## of a *path*, not a bucket.
@@ -40,7 +37,7 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
     system2(s3cmd(), s3.cmd)
 
     ## And then read it back in RDS format.
-    load_from_file <- get(paste0("load_as_", storage_format), envir = as.environment("package:s3mpi"))
+    load_from_file <- get(paste0("load_as_", storage_format))
     load_from_file(x.serialized, ...)
   }
 
@@ -92,4 +89,8 @@ load_as_RDS <- function(filename, ...) {
 
 load_as_CSV <- function(filename, ...) {
   read.csv(filename, ...)
+}
+
+load_as_table <- function(filename, ...) {
+  read.table(filename, ...)
 }
