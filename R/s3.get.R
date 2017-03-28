@@ -7,6 +7,7 @@
 #' @param debug logical. If \code{TRUE}, the \code{s3cmd}
 #'    utility debug flag will be set.
 #' @param cache logical. If \code{TRUE}, an LRU in-memory cache will be referenced.
+#' @param storage_format character. What format the object is stored in. Defaults to RDS.
 #' @aliases s3.put
 #' @return For \code{s3.get}, the R object stored in RDS format on S3 in the \code{path}.
 #'    For \code{s3.put}, the system exit code from running the \code{s3cmd}
@@ -88,9 +89,9 @@ load_as_RDS <- function(filename, ...) {
 }
 
 load_as_CSV <- function(filename, ...) {
-  read.csv(filename, ...)
+  read.csv(filename, ..., stringsAsFactors = FALSE)
 }
 
 load_as_table <- function(filename, ...) {
-  read.table(filename, ...)
+  read.table(filename, ..., stringsAsFactors = FALSE)
 }

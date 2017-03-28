@@ -6,11 +6,12 @@
 \title{Fetch an R object from an S3 path.}
 \usage{
 s3.get(path, bucket.location = "US", verbose = FALSE, debug = FALSE,
-  cache = TRUE)
+  cache = TRUE, storage_format = c("RDS", "CSV", "table"), ...)
 
 s3.put(x, path, name, bucket.location = "US", debug = FALSE,
   check_exists = TRUE, num_retries = getOption("s3mpi.num_retries", 0),
-  backoff = 2^seq(2, num_retries + 1), max_backoff = 128)
+  backoff = 2^seq(2, num_retries + 1), max_backoff = 128,
+  storage_format = c("RDS", "CSV", "table"), row.names = FALSE, ...)
 }
 \arguments{
 \item{path}{character. A full S3 path.}
@@ -24,6 +25,10 @@ utility verbose flag will be set.}
 utility debug flag will be set.}
 
 \item{cache}{logical. If \code{TRUE}, an LRU in-memory cache will be referenced.}
+
+\item{storage_format}{character. What format the object is stored in. Defaults to RDS.}
+
+\item{...}{additional arguments to pass the the saving function.}
 
 \item{x}{ANY. R object to store to S3.}
 
@@ -39,6 +44,10 @@ Number of elements must equal num_retries. Defaults to 4, 8, 16, 32, etc.}
 
 \item{max_backoff}{numeric. Number describing the maximum seconds s3mpi will sleep
 prior to retrying an upload. Defaults to 128 seconds.}
+
+\item{row.names}{logical. Whether or not to write row names when writing CSV's or tables.}
+
+\item{storage_format}{character. What format to store files in. Defaults to RDS.}
 }
 \value{
 For \code{s3.get}, the R object stored in RDS format on S3 in the \code{path}.
