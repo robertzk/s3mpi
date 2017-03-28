@@ -7,11 +7,14 @@
 #'   Number of elements must equal num_retries. Defaults to 4, 8, 16, 32, etc.
 #' @param max_backoff numeric. Number describing the maximum seconds s3mpi will sleep
 #'   prior to retrying an upload. Defaults to 128 seconds.
+#' @param storage_format character. What format to store files in. Defaults to RDS.
+#' @param row.names logical. Whether or not to write row names when writing CSV's or tables.
+#' @param ... additional arguments to pass the the saving function.
 #' @rdname s3.get
 s3.put <- function (x, path, name, bucket.location = "US",
                     debug = FALSE, check_exists = TRUE,
                     num_retries = getOption("s3mpi.num_retries", 0), backoff = 2 ^ seq(2, num_retries + 1),
-                    max_backoff = 128, storage_format = c("RDS", "CSV", "table"), ...) {
+                    max_backoff = 128, storage_format = c("RDS", "CSV", "table"), row.names = FALSE, ...) {
   storage_format <- match.arg(storage_format)
 
   if (is.data.frame(x) && storage_format %in% c("CSV, table")) {
@@ -39,7 +42,7 @@ s3.put <- function (x, path, name, bucket.location = "US",
   dir.create(dirname(x.serialized), showWarnings = FALSE, recursive = TRUE)
   on.exit(unlink(x.serialized, force = TRUE), add = TRUE)
   save_to_file <- get(paste0("save_as_", storage_format))
-  save_to_file(x, x.serialized, ...)
+  save_to_file(x, x.serialized, row.names, ...)
 
   s3.cmd <- paste("put", x.serialized, paste0('"', s3key, '"'),
             bucket_location_to_flag(bucket.location),
@@ -67,10 +70,10 @@ save_as_RDS <- function(x, filename, ...) {
 }
 
 
-save_as_CSV <- function(x, filename, ...) {
-  write.csv(x, filename, ...)
+save_as_CSV <- function(x, filename, row.names, ...) {
+  write.csv(x, filename, row.names = row.names, ...)
 }
 
-save_as_table <- function(x, filename, ...) {
-  write.table(x, filename, ...)
+save_as_table <- function(x, filename, row.names, ...) {
+  write.table(x, filename, row.names = row.names, ...)
 }
