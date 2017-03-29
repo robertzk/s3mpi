@@ -7,17 +7,20 @@
 #' @param debug logical. If \code{TRUE}, the \code{s3cmd}
 #'    utility debug flag will be set.
 #' @param cache logical. If \code{TRUE}, an LRU in-memory cache will be referenced.
+#' @param storage_format character. What format the object is stored in. Defaults to RDS.
 #' @aliases s3.put
 #' @return For \code{s3.get}, the R object stored in RDS format on S3 in the \code{path}.
 #'    For \code{s3.put}, the system exit code from running the \code{s3cmd}
 #'    command line tool to perform the upload.
-s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE, cache = TRUE) {
+s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE, cache = TRUE, storage_format = c("RDS", "CSV", "table"), ...) {
+  storage_format <- match.arg(storage_format)
+
   ## This inappropriately-named function actually checks existence
   ## of a *path*, not a bucket.
   AWS.tools:::check.bucket(path)
 
   # Helper function for fetching data from s3
-  fetch <- function() {
+  fetch <- function(path, storage_format, bucket.location, ...) {
     x.serialized <- tempfile()
     dir.create(dirname(x.serialized), showWarnings = FALSE, recursive = TRUE)
     ## We remove the file [when we exit the function](https://stat.ethz.ch/R-manual/R-patched/library/base/html/on.exit.html).
@@ -37,7 +40,8 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
     }
 
     ## And then read it back in RDS format.
-    readRDS(x.serialized)
+    load_from_file <- get(paste0("load_as_", storage_format))
+    load_from_file(x.serialized, ...)
   }
 
   ## Check for the path in the cache
@@ -46,9 +50,9 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
   if (is.windows() || isTRUE(getOption("s3mpi.disable_lru_cache")) || !isTRUE(cache)) {
     ## We do not have awk, which we will need for the moment to
     ## extract the modified time of the S3 object.
-    ans <- fetch()
+    ans <- fetch(path, storage_format, bucket_location, ...)
   } else if (!s3LRUcache()$exists(path)) {
-    ans <- fetch()
+    ans <- fetch(path, storage_format, bucket_location, ...)
     ## We store the value of the R object in a *least recently used cache*,
     ## expecting the user to not think about optimizing their code and
     ## call `s3read` with the same key multiple times in one session. With
@@ -73,7 +77,7 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
     last_updated <- strptime(result, format = "%d %b %Y %H:%m:%S", tz = "GMT")
 
     if (last_updated > last_cached) {
-      ans <- fetch()
+      ans <- fetch(path, storage_format, bucket_location, ...)
       s3LRUcache()$set(path, ans)
     } else {
       ans <- s3LRUcache()$get(path)
@@ -91,5 +95,34 @@ s3cmd_get_command <- function(path, file, bucket_flag, verbose, debug) {
   } else {
     paste0("s3 cp ", bucket, " ", x.serialized)
   }
+}
+
+## Given an s3cmd path and a bucket location, will construct a flag
+## argument for s3cmd.  If it looks like the s3cmd is actually
+## pointing to an s4cmd, return empty string as s4cmd doesn't
+## support bucket location.
+bucket_location_to_flag <- function(s3cmd_binary_path, bucket_location) {
+  if (grepl("s4cmd", s3cmd_binary_path)) {
+    if (bucket_location != "US") {
+        warning(paste0("Ignoring non-default bucket location ('",
+                       bucket_location,
+                       "') in s3mpi::s3.get since s4cmd was detected",
+                       "-- this might be a little slower but is safe to ignore."));
+    }
+    return("")
+  }
+  return(paste("--bucket_location", bucket_location))
+}
+
+load_as_RDS <- function(filename, ...) {
+  readRDS(filename, ...)
+}
+
+load_as_CSV <- function(filename, ...) {
+  read.csv(filename, ..., stringsAsFactors = FALSE)
+}
+
+load_as_table <- function(filename, ...) {
+  read.table(filename, ..., stringsAsFactors = FALSE)
 }
 
