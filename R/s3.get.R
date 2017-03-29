@@ -31,11 +31,13 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
     }
 
     ## Run the s3cmd tool to fetch the file from S3.
-    s3.cmd <- paste("get", paste0('"', path, '"'), x.serialized,
-                    bucket_location_to_flag(bucket.location),
-                    if (verbose) "--verbose --progress" else "--no-progress",
-                    if (debug) "--debug" else "")
-    system2(s3cmd(), s3.cmd)
+    cmd <- s3cmd_get_command(path, x.serialized, bucket_location_to_flag(bucket.location), verbose, debug)
+    status <- system2(s3cmd(), cmd)
+
+    if (!use_legacy_api() && as.logical(status)) {
+      warning("Nothing exists for key ", key, " in bucket ", bucket)
+      `attr<-`(`class<-`(data.frame(), c("s3mpi_error", class(ans))), "key", bucket)
+    }
 
     ## And then read it back in RDS format.
     load_from_file <- get(paste0("load_as_", storage_format))
@@ -84,6 +86,34 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
   ans
 }
 
+s3cmd_get_command <- function(path, file, bucket_flag, verbose, debug) {
+  if (use_legacy_api()) {
+    paste("get", paste0('"', path, '"'), x.serialized,
+          bucket_location_to_flag(bucket.location),
+          if (verbose) "--verbose --progress" else "--no-progress",
+          if (debug) "--debug" else "")
+  } else {
+    paste0("s3 cp ", bucket, " ", x.serialized)
+  }
+}
+
+## Given an s3cmd path and a bucket location, will construct a flag
+## argument for s3cmd.  If it looks like the s3cmd is actually
+## pointing to an s4cmd, return empty string as s4cmd doesn't
+## support bucket location.
+bucket_location_to_flag <- function(s3cmd_binary_path, bucket_location) {
+  if (grepl("s4cmd", s3cmd_binary_path)) {
+    if (bucket_location != "US") {
+        warning(paste0("Ignoring non-default bucket location ('",
+                       bucket_location,
+                       "') in s3mpi::s3.get since s4cmd was detected",
+                       "-- this might be a little slower but is safe to ignore."));
+    }
+    return("")
+  }
+  return(paste("--bucket_location", bucket_location))
+}
+
 load_as_RDS <- function(filename, ...) {
   readRDS(filename, ...)
 }
@@ -95,3 +125,4 @@ load_as_CSV <- function(filename, ...) {
 load_as_table <- function(filename, ...) {
   read.table(filename, ..., stringsAsFactors = FALSE)
 }
+

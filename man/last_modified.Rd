@@ -15,4 +15,3 @@ the last modified time or \code{NULL} if it does not exist on S3.
 \description{
 Determine the last modified time of an S3 object.
 }
-

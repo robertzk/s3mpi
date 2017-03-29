@@ -42,4 +42,3 @@ stopifnot(s3read("myfunc")(1, 2) == 5) # R can serialize closures!
 \seealso{
 \code{\link{s3store}}
 }
-

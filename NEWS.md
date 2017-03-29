@@ -1,3 +1,7 @@
+# Version 0.2.33
+
+* Other fixes for s4cmd.
+
 # Version 0.2.32
 * allow choice of storage format in `s3read` and `s3store`. Defaults to `RDS`,
   and now you can chooose `CSV` or `table` for data frames.

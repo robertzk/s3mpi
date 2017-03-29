@@ -6,9 +6,37 @@
 
 ## path to shell util
 s3cmd <- function() {
-  if (isTRUE(nzchar(cmd <- getOption("s3mpi.s3cmd_path")))) {
-    cmd
-  } else { as.character(Sys.which("s3cmd")) }
+  if (use_legacy_api()) {
+    if (isTRUE(nzchar(cmd <- getOption("s3mpi.s3cmd_path")))) {
+      cmd
+    } else { as.character(Sys.which("s3cmd")) }
+  } else {
+    if (isTRUE(nzchar(cmd <- getOption("s3mpi.aws_path")))) {
+      cmd
+    } else { as.character(Sys.which("aws")) }
+  }
+}
+
+use_legacy_api <- function() {
+  isTRUE(getOption("s3mpi.legacy_api"))
+}
+
+## Given an s3cmd path and a bucket location, will construct a flag
+## argument for s3cmd.  If it looks like the s3cmd is actually
+## pointing to an s4cmd, return empty string as s4cmd doesn't
+## support bucket location.
+bucket_location_to_flag <- function(bucket_location) {
+  if (using_s4cmd()) {
+    if (!identical(bucket_location, "US")) {
+        warning(paste0("Ignoring non-default bucket location ('",
+                       bucket_location,
+                       "') in s3mpi::s3.get since s4cmd was detected",
+                       "-- this might be a little slower but is safe to ignore."));
+    }
+    ""
+  } else if (use_legacy_api()) {
+    paste("--bucket-location", bucket_location)
+  }
 }
 
 ## Given an s3cmd path and a bucket location, will construct a flag

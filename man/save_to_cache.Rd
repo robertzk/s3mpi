@@ -17,4 +17,3 @@ save_to_cache(key, value, cache_dir = cache_directory())
 \description{
 Helper function for saving a file to a cache directory.
 }
-
