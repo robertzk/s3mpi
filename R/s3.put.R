@@ -64,9 +64,8 @@ run_system_put <- function(path, name, s3.cmd, check_exists, num_retries, backof
 
 s3cmd_put_command <- function(s3key, file, bucket_flag, debug) {
   if (use_legacy_api()) {
-    paste("put", x.serialized, paste0('"', s3key, '"'),
-          bucket_location_to_flag(bucket.location),
-          ifelse(debug, "--debug", ""), "--force")
+    paste("put", file, paste0('"', s3key, '"'),
+          bucket_flag, ifelse(debug, "--debug", ""), "--force")
   } else {
     paste0("s3 cp ", file, " ", s3key)
   }
