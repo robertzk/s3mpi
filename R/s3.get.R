@@ -88,12 +88,12 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
 
 s3cmd_get_command <- function(path, file, bucket_flag, verbose, debug) {
   if (use_legacy_api()) {
-    paste("get", paste0('"', path, '"'), x.serialized,
+    paste("get", paste0('"', path, '"'), file,
           bucket_location_to_flag(bucket.location),
           if (verbose) "--verbose --progress" else "--no-progress",
           if (debug) "--debug" else "")
   } else {
-    paste0("s3 cp ", bucket, " ", x.serialized)
+    paste0("s3 cp ", bucket, " ", file)
   }
 }
 
