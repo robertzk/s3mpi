@@ -50,9 +50,9 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
   if (is.windows() || isTRUE(getOption("s3mpi.disable_lru_cache")) || !isTRUE(cache)) {
     ## We do not have awk, which we will need for the moment to
     ## extract the modified time of the S3 object.
-    ans <- fetch(path, storage_format, bucket_location, ...)
+    ans <- fetch(path, storage_format, bucket.location, ...)
   } else if (!s3LRUcache()$exists(path)) {
-    ans <- fetch(path, storage_format, bucket_location, ...)
+    ans <- fetch(path, storage_format, bucket.location, ...)
     ## We store the value of the R object in a *least recently used cache*,
     ## expecting the user to not think about optimizing their code and
     ## call `s3read` with the same key multiple times in one session. With
@@ -77,7 +77,7 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
     last_updated <- strptime(result, format = "%d %b %Y %H:%m:%S", tz = "GMT")
 
     if (last_updated > last_cached) {
-      ans <- fetch(path, storage_format, bucket_location, ...)
+      ans <- fetch(path, storage_format, bucket.location, ...)
       s3LRUcache()$set(path, ans)
     } else {
       ans <- s3LRUcache()$get(path)
