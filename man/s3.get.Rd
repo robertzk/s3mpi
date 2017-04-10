@@ -3,13 +3,12 @@
 \name{s3.get}
 \alias{s3.get}
 \alias{s3.put}
-\alias{s3.put}
 \title{Fetch an R object from an S3 path.}
 \usage{
-s3.get(path, bucket.location = "US", verbose = FALSE, debug = FALSE,
+s3.get(path, bucket_location = "US", verbose = FALSE, debug = FALSE,
   cache = TRUE, storage_format = c("RDS", "CSV", "table"), ...)
 
-s3.put(x, path, name, bucket.location = "US", debug = FALSE,
+s3.put(x, path, name, bucket_location = "US", debug = FALSE,
   check_exists = TRUE, num_retries = getOption("s3mpi.num_retries", 0),
   backoff = 2^seq(2, num_retries + 1), max_backoff = 128,
   storage_format = c("RDS", "CSV", "table"), row.names = FALSE, ...)
@@ -17,7 +16,7 @@ s3.put(x, path, name, bucket.location = "US", debug = FALSE,
 \arguments{
 \item{path}{character. A full S3 path.}
 
-\item{bucket.location}{character. Usually \code{"US"}.}
+\item{bucket_location}{character. Usually \code{"US"}.}
 
 \item{verbose}{logical. If \code{TRUE}, the \code{s3cmd}
 utility verbose flag will be set.}
@@ -58,3 +57,4 @@ For \code{s3.get}, the R object stored in RDS format on S3 in the \code{path}.
 \description{
 Fetch an R object from an S3 path.
 }
+

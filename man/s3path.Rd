@@ -9,3 +9,4 @@ s3path()
 \description{
 Get your default s3path or error.
 }
+

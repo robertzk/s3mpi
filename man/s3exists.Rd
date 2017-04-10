@@ -24,3 +24,4 @@ s3exists("my/key") # Will look in bucket given by getOption("s3mpi.path")
 s3exists("my/key", "s3://anotherbucket/") # We can of course change the bucket.
 }
 }
+

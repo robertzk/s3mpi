@@ -18,3 +18,4 @@ Delete an R object from S3 by key
 \seealso{
 \code{\link{s3store}}
 }
+

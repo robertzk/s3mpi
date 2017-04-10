@@ -16,3 +16,4 @@ uploading to and downloading from S3 using R's built-in support
 for serializing and deserializing arbitrary objects (see
 \code{\link{readRDS}} and \code{\link{saveRDS}}).
 }
+
