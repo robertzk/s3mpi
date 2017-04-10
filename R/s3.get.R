@@ -1,7 +1,7 @@
 #' Fetch an R object from an S3 path.
 #'
 #' @param path character. A full S3 path.
-#' @param bucket.location character. Usually \code{"US"}.
+#' @param bucket_location character. Usually \code{"US"}.
 #' @param verbose logical. If \code{TRUE}, the \code{s3cmd}
 #'    utility verbose flag will be set.
 #' @param debug logical. If \code{TRUE}, the \code{s3cmd}
@@ -12,7 +12,7 @@
 #' @return For \code{s3.get}, the R object stored in RDS format on S3 in the \code{path}.
 #'    For \code{s3.put}, the system exit code from running the \code{s3cmd}
 #'    command line tool to perform the upload.
-s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE, cache = TRUE, storage_format = c("RDS", "CSV", "table"), ...) {
+s3.get <- function (path, bucket_location = "US", verbose = FALSE, debug = FALSE, cache = TRUE, storage_format = c("RDS", "CSV", "table"), ...) {
   storage_format <- match.arg(storage_format)
 
   ## This inappropriately-named function actually checks existence
@@ -20,7 +20,7 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
   AWS.tools:::check.bucket(path)
 
   # Helper function for fetching data from s3
-  fetch <- function(path, storage_format, bucket.location, ...) {
+  fetch <- function(path, storage_format, bucket_location, ...) {
     x.serialized <- tempfile()
     dir.create(dirname(x.serialized), showWarnings = FALSE, recursive = TRUE)
     ## We remove the file [when we exit the function](https://stat.ethz.ch/R-manual/R-patched/library/base/html/on.exit.html).
@@ -31,7 +31,7 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
     }
 
     ## Run the s3cmd tool to fetch the file from S3.
-    cmd <- s3cmd_get_command(path, x.serialized, bucket_location_to_flag(bucket.location), verbose, debug)
+    cmd <- s3cmd_get_command(path, x.serialized, bucket_location_to_flag(bucket_location), verbose, debug)
     status <- system2(s3cmd(), cmd)
 
     if (!use_legacy_api() && as.logical(status)) {
@@ -50,9 +50,9 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
   if (is.windows() || isTRUE(getOption("s3mpi.disable_lru_cache")) || !isTRUE(cache)) {
     ## We do not have awk, which we will need for the moment to
     ## extract the modified time of the S3 object.
-    ans <- fetch(path, storage_format, bucket.location, ...)
+    ans <- fetch(path, storage_format, bucket_location, ...)
   } else if (!s3LRUcache()$exists(path)) {
-    ans <- fetch(path, storage_format, bucket.location, ...)
+    ans <- fetch(path, storage_format, bucket_location, ...)
     ## We store the value of the R object in a *least recently used cache*,
     ## expecting the user to not think about optimizing their code and
     ## call `s3read` with the same key multiple times in one session. With
@@ -77,7 +77,7 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
     last_updated <- strptime(result, format = "%d %b %Y %H:%m:%S", tz = "GMT")
 
     if (last_updated > last_cached) {
-      ans <- fetch(path, storage_format, bucket.location, ...)
+      ans <- fetch(path, storage_format, bucket_location, ...)
       s3LRUcache()$set(path, ans)
     } else {
       ans <- s3LRUcache()$get(path)
@@ -89,7 +89,7 @@ s3.get <- function (path, bucket.location = "US", verbose = FALSE, debug = FALSE
 s3cmd_get_command <- function(path, file, bucket_flag, verbose, debug) {
   if (use_legacy_api()) {
     paste("get", paste0('"', path, '"'), file,
-          bucket_location_to_flag(bucket.location),
+          bucket_flag,
           if (verbose) "--verbose --progress" else "--no-progress",
           if (debug) "--debug" else "")
   } else {
@@ -101,8 +101,8 @@ s3cmd_get_command <- function(path, file, bucket_flag, verbose, debug) {
 ## argument for s3cmd.  If it looks like the s3cmd is actually
 ## pointing to an s4cmd, return empty string as s4cmd doesn't
 ## support bucket location.
-bucket_location_to_flag <- function(s3cmd_binary_path, bucket_location) {
-  if (grepl("s4cmd", s3cmd_binary_path)) {
+bucket_location_to_flag <- function(bucket_location) {
+  if (grepl("s4cmd", s3cmd())) {
     if (bucket_location != "US") {
         warning(paste0("Ignoring non-default bucket location ('",
                        bucket_location,
