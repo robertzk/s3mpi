@@ -11,7 +11,7 @@
 #' @param row.names logical. Whether or not to write row names when writing CSV's or tables.
 #' @param ... additional arguments to pass the the saving function.
 #' @rdname s3.get
-s3.put <- function (x, path, name, bucket.location = "US",
+s3.put <- function (x, path, name, bucket_location = "US",
                     debug = FALSE, check_exists = TRUE,
                     num_retries = getOption("s3mpi.num_retries", 0), backoff = 2 ^ seq(2, num_retries + 1),
                     max_backoff = 128, storage_format = c("RDS", "CSV", "table"), row.names = FALSE, ...) {
@@ -44,7 +44,7 @@ s3.put <- function (x, path, name, bucket.location = "US",
   save_to_file <- get(paste0("save_as_", storage_format))
   save_to_file(x, x.serialized, row.names, ...)
 
-  cmd <- s3cmd_put_command(s3key, x.serialized, bucket_location_to_flag(bucket.location), debug)
+  cmd <- s3cmd_put_command(s3key, x.serialized, bucket_location_to_flag(bucket_location), debug)
   run_system_put(path, name, cmd, check_exists, num_retries, backoff)
 }
 
