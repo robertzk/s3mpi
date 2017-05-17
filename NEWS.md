@@ -1,4 +1,4 @@
-# Version 0.2.33-7
+# Version 0.2.33-8
 
 * Other fixes for s4cmd.
 
