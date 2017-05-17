@@ -1,3 +1,7 @@
+# Version 0.2.40
+
+* Remove overly complicated metaprogramming.
+
 # Version 0.2.33-9
 
 * Other fixes for s4cmd.

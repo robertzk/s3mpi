@@ -53,7 +53,9 @@ run_system_put <- function(path, name, s3.cmd, check_exists, num_retries, backof
   if (isTRUE(check_exists) && !s3exists(name, path)) {
     if (num_retries > 0) {
       Sys.sleep(backoff[length(backoff) - num_retries + 1])
-      do.call(Recall, `$<-`(as.list(match.call()[-1]), "num_retries", num_retries - 1))
+      Recall(path = path, name = name, s3.cmd = s3.cmd,
+             check_exists = check_exists,
+             num_retries = num_retries - 1, backoff = backoff)
     } else {
       stop("Object could not be successfully stored.")
     }
