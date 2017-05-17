@@ -35,8 +35,8 @@ s3.get <- function (path, bucket_location = "US", verbose = FALSE, debug = FALSE
     status <- system2(s3cmd(), cmd)
 
     if (!use_legacy_api() && as.logical(status)) {
-      warning("Nothing exists for key ", key, " in bucket ", bucket)
-      `attr<-`(`class<-`(data.frame(), c("s3mpi_error", class(ans))), "key", bucket)
+      warning("Nothing exists for key ", path)
+      `attr<-`(`class<-`(data.frame(), c("s3mpi_error", status)), "key", path)
     }
 
     ## And then read it back in RDS format.
