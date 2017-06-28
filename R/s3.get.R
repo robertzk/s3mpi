@@ -74,7 +74,7 @@ s3.get <- function (path, bucket_location = "US", verbose = FALSE, debug = FALSE
     # in its third line, so we subset to the 20-39 index range
     # to extract "16 Jun 2015 19:36:10".
     result <- substring(result, 20, 39)
-    last_updated <- strptime(result, format = "%d %b %Y %H:%m:%S", tz = "GMT")
+    last_updated <- strptime(result, format = "%d %b %Y %H:%M:%S", tz = "GMT")
 
     if (last_updated > last_cached) {
       ans <- fetch(path, storage_format, bucket_location, ...)

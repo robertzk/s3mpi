@@ -1,3 +1,7 @@
+# Version 0.2.41
+
+* Fix incorrect `strptime` version specification.
+
 # Version 0.2.40
 
 * Remove overly complicated metaprogramming.
