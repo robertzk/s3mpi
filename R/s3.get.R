@@ -34,14 +34,14 @@ s3.get <- function (path, bucket_location = "US", verbose = FALSE, debug = FALSE
     cmd <- s3cmd_get_command(path, x.serialized, bucket_location_to_flag(bucket_location), verbose, debug)
     status <- system2(s3cmd(), cmd)
 
-    if (!use_legacy_api() && as.logical(status)) {
+    if (as.logical(status)) {
       warning("Nothing exists for key ", path)
       `attr<-`(`class<-`(data.frame(), c("s3mpi_error", status)), "key", path)
+    } else {
+      ## And then read it back in RDS format.
+      load_from_file <- get(paste0("load_as_", storage_format))
+      load_from_file(x.serialized, ...)
     }
-
-    ## And then read it back in RDS format.
-    load_from_file <- get(paste0("load_as_", storage_format))
-    load_from_file(x.serialized, ...)
   }
 
   ## Check for the path in the cache
@@ -68,7 +68,7 @@ s3.get <- function (path, bucket_location = "US", verbose = FALSE, debug = FALSE
 
     # Check time on s3 remote's copy using the `s3cmd info` command.
     s3.cmd <- paste("info ", path, "| head -n 3 | tail -n 1")
-    result <- system2(s3cmd(), s3.cmd, stdout = TRUE)
+    result <- system2(s3cmd(), s3.cmd, stdout = TRUE, stderr = NULL)
     # The `s3cmd info` command produces the output
     # "    Last mod:  Tue, 16 Jun 2015 19:36:10 GMT"
     # in its third line, so we subset to the 20-39 index range
@@ -125,4 +125,14 @@ load_as_CSV <- function(filename, ...) {
 load_as_table <- function(filename, ...) {
   read.table(filename, ..., stringsAsFactors = FALSE)
 }
+
+#' Printing for s3mpi errors.
+#' 
+#' @param x ANY. R object to print.
+#' @param ... additional objects to pass to print function.
+#' @export
+print.s3mpi_error <- function(x, ...)  {
+  cat("Error reading from S3: key", crayon::white$bold(attr(x, "key")), "not found.\n")
+}
+
 

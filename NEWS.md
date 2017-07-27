@@ -1,3 +1,7 @@
+# Version 0.2.42
+
+* Better error output in `s3read` if path does not exist. (see [issue #72](https://github.com/robertzk/s3mpi/issues/72))
+
 # Version 0.2.41
 
 * Fix incorrect `strptime` version specification.

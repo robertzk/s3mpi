@@ -47,4 +47,3 @@ to (\code{s3store}) S3, respectively. This allows s3mpi storage
 of not only vanilla R objects but \emph{arbitrary objects in memory}
 (whether they are internally represented by a C, Rust, Java, etc. process).
 }
-
