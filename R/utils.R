@@ -6,7 +6,7 @@
 
 ## path to shell util
 s3cmd <- function() {
-  if (use_legacy_api()) {
+  cmd <- if (use_legacy_api()) {
     if (isTRUE(nzchar(cmd <- getOption("s3mpi.s3cmd_path")))) {
       cmd
     } else { as.character(Sys.which("s3cmd")) }
@@ -15,6 +15,8 @@ s3cmd <- function() {
       cmd
     } else { as.character(Sys.which("aws")) }
   }
+  if (is.null(cmd)) { stop("No s3mpi backend found on your system! Make sure you install either aws-cli or s3cmd or s4cmd") }
+  cmd
 }
 
 use_legacy_api <- function() {
