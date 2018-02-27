@@ -158,7 +158,8 @@ export AWS_SECRET_ACCESS_KEY=PUTYOURSECRETKEYHERE
 
 #### Local Caching
 
-You can enable local caching of downloaded and uploaded files using:
+You can enable local caching of downloaded and uploaded files by setting a
+global systen environment variable or by using:
 
 ```R
 options(s3mpi.cache = '~/.s3cache') # Or a directory of your choice

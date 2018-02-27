@@ -3,7 +3,6 @@
 \name{s3.get}
 \alias{s3.get}
 \alias{s3.put}
-\alias{s3.put}
 \title{Fetch an R object from an S3 path.}
 \usage{
 s3.get(path, bucket_location = "US", verbose = FALSE, debug = FALSE,
@@ -58,3 +57,4 @@ For \code{s3.get}, the R object stored in RDS format on S3 in the \code{path}.
 \description{
 Fetch an R object from an S3 path.
 }
+

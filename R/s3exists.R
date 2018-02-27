@@ -7,7 +7,8 @@
 #' @param path string. Path to file.  If missing, the entire s3 path must be provided in name.
 #' @export
 #' @examples \dontrun{
-#' s3exists("my/key") # Will look in bucket given by getOption("s3mpi.path")
+#' s3exists("my/key") # Will look in bucket given by getOption("s3mpi.path") or
+#' from a system environment variable.
 #'   # For example, if this option is "s3://mybucket/", then this query
 #'   # will check for existence of the \code{s3://mybucket/my/key} S3 path.
 #'

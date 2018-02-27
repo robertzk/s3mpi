@@ -21,3 +21,4 @@ This function will also test to determine whether the file has been
 modified on S3 since the last cache save. If the file has never been
 cached or the cache is invalidated, it will return \code{s3mpi::not_cached}.
 }
+

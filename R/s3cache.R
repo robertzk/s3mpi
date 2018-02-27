@@ -7,7 +7,8 @@
 ##
 ## To facilitate this process and speed things up a bit, we keep a
 ## local *file system cache* of the objects downloaded from S3 using
-## `s3read`. If the user has set their `s3mpi.cache` option to a
+## `s3read`. If the user has set their `s3mpi.cache` option or system
+## environment variable to a
 ## directory path (by default `~/.s3cache`), we will use that directory
 ## to store downloaded R objects. The second time a user calls
 ## `s3read("some/key")` we will fetch it from the local file system
