@@ -13,7 +13,7 @@
 #' @rdname s3.get
 s3.put <- function (x, path, name, bucket_location = "US",
                     debug = FALSE, check_exists = TRUE,
-                    num_retries = getOption("s3mpi.num_retries", 0), backoff = 2 ^ seq(2, num_retries + 1),
+                    num_retries = get_option("s3mpi.num_retries", 0), backoff = 2 ^ seq(2, num_retries + 1),
                     max_backoff = 128, storage_format = c("RDS", "CSV", "table"), row.names = FALSE, ...) {
   storage_format <- match.arg(storage_format)
 

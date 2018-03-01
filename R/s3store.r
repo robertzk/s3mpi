@@ -47,7 +47,7 @@ s3store <- function(obj, name = NULL, path = s3path(), safe = FALSE, ...) {
   obj4save <- s3normalize(obj, FALSE)
   s3.put(obj4save, path, name, ...)
 
-  if (!is.null(getOption("s3mpi.cache", Sys.getenv("S3MPI_CACHE")))) {
+  if (!is.null(get_option("s3mpi.cache"))) {
     s3cache(s3key, obj4save)
   }
 

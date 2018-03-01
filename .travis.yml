@@ -1,43 +1,24 @@
 language: c
-sudo: false
+sudo: true
+before_install:
+  - curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
+  - chmod 755 ./travis-tool.sh
+  - "./travis-tool.sh bootstrap"
+sudo: required
 git:
   submodules: false
-addons:
-  apt:
-    sources:
-      - r-packages-precise
-    packages:
-      - r-base-dev
-      - r-recommended
-      - pandoc
 env:
   - global:
     - WARNINGS_ARE_ERRORS=1
     - _R_CHECK_FORCE_SUGGESTS_=0
     - LINTR_COMMENT_BOT=false
     - R_LIBS_USER=~/.R/library
-cache:
-  directories:
-    $R_LIBS_USER
-before_script:
+install:
   - mkdir -p "$R_LIBS_USER"
-  - Rscript -e 'if (!require("devtools")) install.packages("devtools", repos = "http://cran.rstudio.com/")'
-  - Rscript -e 'if (!require("plyr")) install.packages("plyr", repos = "http://cran.rstudio.com/")'
-  - Rscript -e 'if (!require("pryr")) install.packages("pryr", repos = "http://cran.rstudio.com/")'
-  - Rscript -e 'if (!require("XML")) install.packages("XML", repos = "http://cran.rstudio.com/")'
-  - Rscript -e 'if (!require("rcmdcheck")) install.packages("rcmdcheck", repos = "http://cran.rstudio.com/")'
-  - Rscript -e 'if (!require("knitr")) install.packages("knitr", repos = "http://cran.rstudio.com/")'
-  - Rscript -e 'if (!require("withr")) install.packages("withr", repos = "http://cran.rstudio.com/")'
-  - Rscript -e 'if (!require("testthat")) install.packages("testthat", repos = "http://cran.rstudio.com/")'
-  - Rscript -e 'if (!require("roxygen2")) devtools::install_github("klutometis/roxygen@v5.0.1")'
-  - Rscript -e 'if (!require("rcmdcheck")) devtools::install_github("MangoTheCat/rcmdcheck")'
-  - Rscript -e 'if (!require("aws-tools")) devtools::install_github("avantcredit/aws-tools")'
-  - Rscript -e 'if (!require("stringr")) devtools::install_github("hadley/stringr")'
-  - Rscript -e 'if (!require("testthat")) devtools::install_github("hadley/testthat")'
-  - Rscript -e 'if (!require("testthatsomemore")) devtools::install_github("robertzk/testthatsomemore")'
-  - Rscript -e 'if (!require("covr")) devtools::install_github("jimhester/covr")'
-  - Rscript -e 'if (!require("checkr") || packageVersion("checkr") < package_version("0.0.4.9007")) { devtools::install_github("peterhurford/checkr") }'
-  - Rscript -e 'devtools::install_deps(repos = "http://cran.rstudio.com", dependencies = TRUE)'
+  - "./travis-tool.sh install_r devtools"
+  - "./travis-tool.sh install_r rcmdcheck"
+  - "./travis-tool.sh github_package jimhester/covr robertzk/testthatsomemore"
+  - "./travis-tool.sh install_deps"
 script:
   - Rscript -e 'try(devtools::install(".")); r <- rcmdcheck::rcmdcheck(".", args = c("--no-manual")); quit(save = "no", status = if (length(c(r$errors, r$warnings)) > 1 || grepl("FAILED", r$output$stdout)) { 1 } else { 0 }, runLast = FALSE)'
 after_success:

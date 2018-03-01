@@ -7,11 +7,11 @@
 ## path to shell util
 s3cmd <- function() {
   cmd <- if (use_legacy_api()) {
-    if (isTRUE(nzchar(cmd <- getOption("s3mpi.s3cmd_path")))) {
+    if (isTRUE(nzchar(cmd <- get_option("s3mpi.s3cmd_path")))) {
       cmd
     } else { as.character(Sys.which("s3cmd")) }
   } else {
-    if (isTRUE(nzchar(cmd <- getOption("s3mpi.aws_path")))) {
+    if (isTRUE(nzchar(cmd <- get_option("s3mpi.aws_path")))) {
       cmd
     } else { as.character(Sys.which("aws")) }
   }
@@ -20,7 +20,7 @@ s3cmd <- function() {
 }
 
 use_legacy_api <- function() {
-  isTRUE(getOption("s3mpi.legacy_api"))
+  isTRUE(get_option("s3mpi.legacy_api"))
 }
 
 ## Given an s3cmd path and a bucket location, will construct a flag
@@ -89,7 +89,7 @@ cache_enabled <- function() {
 }
 
 cache_directory <- function() {
-  dir <- getOption("s3mpi.cache", Sys.getenv("S3MPI_CACHE"))
+  dir <- get_option("s3mpi.cache")
   if (!is.null(dir) && !(is.character(dir) && length(dir) == 1 && !is.na(dir))) {
     stop("Please set the ", sQuote("s3mpi.cache"), " option to a character ",
          "vector of length 1 giving a directory path.")
@@ -104,7 +104,7 @@ cache_directory <- function() {
 has_internet <- local({
   has_internet_flag <- NULL
   function() {
-    if (!is.null(getOption("s3mpi.skip_connection_check"))) return(FALSE)
+    if (!is.null(get_option("s3mpi.skip_connection_check"))) return(FALSE)
     if (!is.null(has_internet_flag)) { return(has_internet_flag) }
     has_internet_flag <<- suppressWarnings({
       internet_check <- try(file("http://google.com", "r"))
@@ -121,7 +121,7 @@ has_internet <- local({
 ## using [the cacher package](https://github.com/kirillseva/cacher).
 s3LRUcache <- function() {
   if (is.null(.s3mpienv$lrucache)) {
-    .s3mpienv$lrucache <- cacher::LRUcache(getOption("s3mpi.cache_size", "2Gb"))
+    .s3mpienv$lrucache <- cacher::LRUcache(get_option("s3mpi.cache_size", "2Gb"))
   } else {
     .s3mpienv$lrucache
   }
@@ -138,4 +138,13 @@ add_ending_slash <- function(path) {
 
 using_s4cmd <- function() {
   grepl("s4cmd", s3cmd())
+}
+
+get_option <- function(x, default = NULL) {
+  result <- getOption(x)
+  if (is.null(result)) {
+    result <- Sys.getenv(toupper(gsub("\\.", "_", x)))
+    if (!nzchar(result)) { result <- NULL }
+  }
+  result %||% default
 }

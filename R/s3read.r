@@ -33,7 +33,7 @@ s3read <- function(name, path = s3path(), cache = TRUE, serialize = TRUE, ...) {
 
   s3key <- paste(path, name, sep = "")
 
-  if (!isTRUE(cache) || is.null(getOption("s3mpi.cache"))) {
+  if (!isTRUE(cache) || is.null(get_option("s3mpi.cache"))) {
     value <- s3.get(s3key, cache = FALSE, ...)
   } else if (is.not_cached(value <- s3cache(s3key))) {
     value <- s3.get(s3key, cache = TRUE, ...)

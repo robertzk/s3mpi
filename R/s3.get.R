@@ -47,7 +47,7 @@ s3.get <- function (path, bucket_location = "US", verbose = FALSE, debug = FALSE
   ## Check for the path in the cache
   ## If it does not exist, create and return its entry.
   ## The `s3LRUcache` helper is defined in utils.R
-  if (is.windows() || isTRUE(getOption("s3mpi.disable_lru_cache")) || !isTRUE(cache)) {
+  if (is.windows() || isTRUE(get_option("s3mpi.disable_lru_cache")) || !isTRUE(cache)) {
     ## We do not have awk, which we will need for the moment to
     ## extract the modified time of the S3 object.
     ans <- fetch(path, storage_format, bucket_location, ...)
@@ -127,12 +127,10 @@ load_as_table <- function(filename, ...) {
 }
 
 #' Printing for s3mpi errors.
-#' 
+#'
 #' @param x ANY. R object to print.
 #' @param ... additional objects to pass to print function.
 #' @export
 print.s3mpi_error <- function(x, ...)  {
   cat("Error reading from S3: key", crayon::white$bold(attr(x, "key")), "not found.\n")
 }
-
-

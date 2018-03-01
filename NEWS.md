@@ -1,3 +1,7 @@
+# Version 0.2.44
+
+* Bugfixes and better compatibility with system environment variables.
+
 # Version 0.2.43
 
 * Allowing s3mpi.path and s3mpi.cache to be called via system environment variables.
