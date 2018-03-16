@@ -121,6 +121,11 @@ last_modified <- function(key) {
   ## since we can't figure out if it has! Here, we simply pull from
   ## the cache.
   if (!has_internet()) { return(as.POSIXct(as.Date("2000-01-01"))) }
+  cmd <- if (use_legacy_api()) {
+    paste("ls", key)
+  } else {
+    paste("s3", "ls", key)
+  }
   s3result <- system2(s3cmd(), c("ls", key), stdout = TRUE)[1L]
   if (is.character(s3result) && !is.na(s3result) && nzchar(s3result)) {
     ## We use [`strptime`](https://stat.ethz.ch/R-manual/R-patched/library/base/html/strptime.html)

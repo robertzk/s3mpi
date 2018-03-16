@@ -69,7 +69,7 @@ s3cmd_put_command <- function(s3key, file, bucket_flag, debug) {
     paste("put", file, paste0('"', s3key, '"'),
           bucket_flag, ifelse(debug, "--debug", ""), "--force")
   } else {
-    paste0("s3 cp ", file, " ", s3key)
+    paste("s3 cp", file, s3key)
   }
 }
 

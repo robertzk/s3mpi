@@ -7,5 +7,10 @@
 #' @export
 s3delete <- function(key, path = s3path()) {
   path <- add_ending_slash(path)
-  system2(s3cmd(), paste0("del ", path, "/", key))
+  cmd <- if (use_legacy_api()) {
+    paste0("del ", path, "/", key)
+  } else {
+    paste0("s3 rm ", path, key)
+  }
+  system2(s3cmd(), cmd)
 }
