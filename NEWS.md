@@ -1,3 +1,7 @@
+# Version 0.2.45
+
+* Compatibility with `aws-cli`.
+
 # Version 0.2.44
 
 * Bugfixes and better compatibility with system environment variables.
