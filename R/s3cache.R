@@ -126,7 +126,7 @@ last_modified <- function(key) {
   } else {
     paste("s3", "ls", key)
   }
-  s3result <- system2(s3cmd(), c("ls", key), stdout = TRUE)[1L]
+  s3result <- system2(s3cmd(), cmd, stdout = TRUE)[1L]
   if (is.character(s3result) && !is.na(s3result) && nzchar(s3result)) {
     ## We use [`strptime`](https://stat.ethz.ch/R-manual/R-patched/library/base/html/strptime.html)
     ## to extract the modification time from the `s3cmd ls` query.

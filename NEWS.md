@@ -1,3 +1,7 @@
+# Version 0.2.46
+
+* Fix typo in `last_modified`.
+
 # Version 0.2.45
 
 * Compatibility with `aws-cli`.
