@@ -1,3 +1,7 @@
+# Version 0.2.47
+
+* Fix bug in `s3exists` when using `aws-cli`.
+
 # Version 0.2.46
 
 * Fix typo in `last_modified`.

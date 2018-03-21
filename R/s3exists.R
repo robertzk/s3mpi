@@ -25,9 +25,7 @@ s3exists <- function(name, path = s3path()) {
 
   results <- system2(s3cmd(), s3cmd_exists_command(s3key), stdout = TRUE)
 
-  ## We know that the key exists if a result was returned, i.e., the
-  ## shown regex gives a match.
-  sum(grepl(paste0(name, "(/[0-9A-Za-z]+)*/?$"), results)) > 0
+  check_exists_results(name, results)
 }
 
 s3cmd_exists_command <- function(s3key) {
@@ -36,4 +34,16 @@ s3cmd_exists_command <- function(s3key) {
   } else {
     paste("s3", "ls", s3key)
   }
+}
+
+
+check_exists_results <- function(name, results) {
+  ## We know that the key exists if a result was returned, i.e., the
+  ## shown regex gives a match.
+  if (use_legacy_api()) {
+    matches <- grepl(paste0(name, "(/[0-9A-Za-z]+)*/?$"), results)
+  } else {
+    matches <- grepl(paste0(basename(name), "$"), results)
+  }
+  sum(matches) > 0
 }
